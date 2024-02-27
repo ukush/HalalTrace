@@ -18,7 +18,7 @@
 | Actor | Role |
 | ----- | ----- |
 | Veterinarian | To perform health checks on animals regarding welfare, as well as prescribe and administer drugs to treat sickness and disease, where applicable.
-| Slaughterhouse Audtors | Verify the animal is in good health before its slaughter, by carrying out the necessary checks and tests |
+| Slaughterhouse Auditors | Verify the animal is in good health before its slaughter, by carrying out the necessary checks and tests |
 | Halal Certification Authorities | Issues and manages the types of certificates that are required for slaughterhouse and proceessing facility activities |
 | Independent Food Regulators | Perform tests on animals/meat products such as gather DNA samples to be sent for laboratory inspection |
 
