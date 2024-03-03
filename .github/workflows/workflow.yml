@@ -1,12 +1,16 @@
 name: CI/CD workflow
 on: 
   push:
-    branches: [main]
+    branches: '*'
+  pull_request:
+    branches:
+        main
+    types:
+        closed
+
 jobs:
   build-and-test:
     runs-on: Ubuntu 20.04
-
-
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
