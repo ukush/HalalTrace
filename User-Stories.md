@@ -5,7 +5,7 @@
 | ----- | ----- |
 | Farmer | As a farmer, I want to register my farm and business so that I can partcipate in the system.
 | Farmer | As a farmer, I want to record important information about my animals such as their birth-date, breed, herd number, unique animal id, place of birth and scheduled slaughter date, so that this information can be available and visible to other supply chain actors. |
-| Farner | As a farmer, I want to scan a tag or qr code of one of my animals so that I can view the details such as its scheduled slaughter date. |
+| Farmer | As a farmer, I want to scan a tag or qr code of one of my animals so that I can view the details such as its scheduled slaughter date. |
 | Farmer | As a farmer, I want to update/add information about of one my animals such as when it gets ill, and if any medication is given so that I can ensure this crutial information is recorded and available for anyone to see. |
 | Farmer | As a farmer, I want to transfer ownership of my animal(s) to the abattoir/slaughterhouse so that It can be slaughtered. |
 | Slaughterman | As a slaughterman, I want to perform a health check on the animal from the farm, so that I can ensure only healthy animals are slaughtered, as per Islamic regulations |
