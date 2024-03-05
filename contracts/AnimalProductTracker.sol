@@ -50,6 +50,11 @@ contract AnimalProductTracker is ERC1155, AccessControl {
             amounts[i] = 1;
         }
 
+        // update all the stages to Created
+        for (uint256 i = 0; i < ids.length; i++) {
+            animalToCurrentStage[ids[i]] = uint256(LifecycleStage.Created);
+        }
+
         bytes memory data = abi.encode(animalType, breed, herdNumber);
 
         _mintBatch(to, ids, amounts, data);
