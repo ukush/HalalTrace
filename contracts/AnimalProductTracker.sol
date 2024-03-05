@@ -17,16 +17,16 @@ contract AnimalProductTracker is ERC1155, AccessControl {
     enum CurrentLifecycleStage {Created, Farm, Slaughter, Processing, Distribution, Retail, Purchased}
 
     mapping (uint256 => uint256[5]) public animalToLifecycleTokens;
-    mapping(uint256 => uint256) public animalToCurrentStage
+    mapping(uint256 => uint256) public animalToCurrentStage;
 
     /**
      * When this contract is created, admin access is given to the deployer.
      * Mint access can only be granted by the admin and is only given to farmers once they've been verified off-chain
      * @param defaultAdmin the address of the owner of the contract
      */
-    constructor(address defaultAdmin) ERC1155("") {
-        _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
-    }
+    // constructor(address defaultAdmin) ERC1155("") {
+    //     _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
+    // }
 
 
     /**
@@ -42,8 +42,8 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      */
     function mintAnimalNFTs(address to, string memory animalType, string memory breed, uint256 herdNumber, uint256 amount) public onlyRole(FARMER_ROLE) {
 
-        uint256[amount] memory ids;
-        uint256[amount] memory amounts;
+        uint256[] memory ids;
+        uint256[] memory amounts;
 
         for (uint256 i = 0; i < amount; i++) {
             ids[i] = _nextTokenId++;
@@ -52,7 +52,7 @@ contract AnimalProductTracker is ERC1155, AccessControl {
 
         // update all the stages to Created
         for (uint256 i = 0; i < ids.length; i++) {
-            animalToCurrentStage[ids[i]] = uint256(LifecycleStage.Created);
+            animalToCurrentStage[ids[i]] = uint256(CurrentLifecycleStage.Created);
         }
 
         bytes memory data = abi.encode(animalType, breed, herdNumber);
@@ -67,11 +67,11 @@ contract AnimalProductTracker is ERC1155, AccessControl {
         addHealthToken(animalTokenID, healthTokenID);
     }
 
-    function mintSlaughterToken(uint256 animalTokenID, uint256 slaughterDate, bool preStunned, string memory slaughterMethod, string memory     slaughterApparatus, bool invocation, string slaughtermanID) public onlyRole(SLAUGHTERHOUSE_ROLE) {
+    function mintSlaughterToken(uint256 animalTokenID, uint256 slaughterDate, bool preStunned, string memory slaughterMethod, string memory     slaughterApparatus, bool invocation, string memory slaughtermanID) public onlyRole(SLAUGHTERHOUSE_ROLE) {
         _nextTokenId++;
          bytes memory data = abi.encode(slaughterDate, preStunned, slaughterMethod, slaughterApparatus, invocation, slaughtermanID);
          uint256 slaughterTokenID = _mint(msg.sender, _nextTokenId, 1, data);
-         addSlaughterToken(animalTokenID, slaughterTokenID)
+         addSlaughterToken(animalTokenID, slaughterTokenID);
     }
 
     function mintProcesingToken(uint256 animalTokenID, uint256 productionDate, uint256 bestBeforeDate, string memory batchNo) public onlyRole(PROCESSOR_ROLE) {
@@ -98,39 +98,39 @@ contract AnimalProductTracker is ERC1155, AccessControl {
 
 
     function addHealthToken(uint256 animalTokenId, uint256 healthTokenId) private {
-        require(animalToCurrentStage[animalTokenId] == uint256(LifecycleStage.Created), "Health token already added or invalid stage");
+        require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Created), "Health token already added or invalid stage");
       
         // Add the health token
         animalToLifecycleTokens[animalTokenId][0] = healthTokenId;
-        animalToCurrentStage[animalTokenId] = uint256(LifecycleStage.Health);
+        animalToCurrentStage[animalTokenId] = uint256(CurrentLifecycleStage.Farm);
     }
 
     function addSlaughterToken(uint256 animalTokenId, uint256 slaughterTokenId) private {
-        require(animalToCurrentStage[animalTokenId] == uint256(LifecycleStage.Health), "Invalid stage to add slaughter token");
+        require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Farm), "Invalid stage to add slaughter token");
         // Add the slaughter token
         animalToLifecycleTokens[animalTokenId][1] = slaughterTokenId;
-        animalToCurrentStage[animalTokenId] = uint256(LifecycleStage.Slaughter);
+        animalToCurrentStage[animalTokenId] = uint256(CurrentLifecycleStage.Slaughter);
     }
 
     function addProcessingToken(uint256 animalTokenId, uint256 processingTokenId) private {
-        require(animalToCurrentStage[animalTokenId] == uint256(LifecycleStage.Slaughter), "Invalid stage to add slaughter token");
+        require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Slaughter), "Invalid stage to add slaughter token");
         // Add the processing token
         animalToLifecycleTokens[animalTokenId][2] = processingTokenId;
-        animalToCurrentStage[animalTokenId] = uint256(LifecycleStage.Processing);
+        animalToCurrentStage[animalTokenId] = uint256(CurrentLifecycleStage.Processing);
     }
 
     function addDistributorToken(uint256 animalTokenId, uint256 disributorTokenId) private {
-        require(animalToCurrentStage[animalTokenId] == uint256(LifecycleStage.Processing), "Invalid stage to add slaughter token");
+        require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Processing), "Invalid stage to add slaughter token");
         // Add the distibution token
         animalToLifecycleTokens[animalTokenId][3] = disributorTokenId;
-        animalToCurrentStage[animalTokenId] = uint256(LifecycleStage.Distribution);
+        animalToCurrentStage[animalTokenId] = uint256(CurrentLifecycleStage.Distribution);
     }
 
     function addRetailToken(uint256 animalTokenId, uint256 retailTokenId) private {
-        require(animalToCurrentStage[animalTokenId] == uint256(LifecycleStage.Distribution), "Invalid stage to add slaughter token");
+        require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Distribution), "Invalid stage to add slaughter token");
         // Add the retail token
         animalToLifecycleTokens[animalTokenId][4] = retailTokenId;
-        animalToCurrentStage[animalTokenId] = uint256(LifecycleStage.Retail);
+        animalToCurrentStage[animalTokenId] = uint256(CurrentLifecycleStage.Retail);
     }
     
 
