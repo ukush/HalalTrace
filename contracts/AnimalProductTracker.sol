@@ -1,16 +1,18 @@
 // SPDX-License-Identifier: MIT
 // Compatible with OpenZeppelin Contracts ^5.0.0
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract AnimalProductTracker is ERC1155, AccessControl {
+    // Define roles for access
     bytes32 public constant FARMER_ROLE = keccak256("FARMER_ROLE");
     bytes32 public constant SLAUGHTERHOUSE_ROLE = keccak256("SLAUGHTERHOUSE_ROLE");
     bytes32 public constant PROCESSOR_ROLE = keccak256("PROCESSOR_ROLE");
     bytes32 public constant DISTRIBUTOR_ROLE = keccak256("DISTRIBUTOR_ROLE");
     bytes32 public constant RETAILER_ROLE = keccak256("RETAILER_ROLE");
+    // For token IDs
     uint256 private _nextTokenId;
 
     // Stages of the supply chain
@@ -72,11 +74,11 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param weight the weight of the animal
      * @param vetApproved flag for whether vet has approved the animal for slaughter
      */
-    function mintHealthToken(uint256 animalTokenID, uint256 weight, bool vetApproved) public onlyRole(FARMER_ROLE) {
+    function mintHealthToken(uint256 animalTokenId, uint256 weight, bool vetApproved) public onlyRole(FARMER_ROLE) {
         _nextTokenId++;
         bytes memory data = abi.encode(weight, vetApproved);
-        uint256 healthTokenID = _mint(msg.sender, _nextTokenId, 1, data);
-        addHealthToken(animalTokenID, healthTokenID);
+        _mint(msg.sender, _nextTokenId, 1, data);
+        addHealthToken(animalTokenId, _nextTokenId);
     }
 
     /**
@@ -89,11 +91,11 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param invocation flag for whether the invocation of prayer has been recited prior to slaughtering
      * @param slaughtermanID the id of the person carrying out the slaughter
      */
-    function mintSlaughterToken(uint256 animalTokenID, uint256 slaughterDate, bool preStunned, string memory slaughterMethod, string memory slaughterApparatus, bool invocation, string memory slaughtermanID) public onlyRole(SLAUGHTERHOUSE_ROLE) {
+    function mintSlaughterToken(uint256 animalTokenId, uint256 slaughterDate, bool preStunned, string memory slaughterMethod, string memory slaughterApparatus, bool invocation, string memory slaughtermanID) public onlyRole(SLAUGHTERHOUSE_ROLE) {
         _nextTokenId++;
          bytes memory data = abi.encode(slaughterDate, preStunned, slaughterMethod, slaughterApparatus, invocation, slaughtermanID);
-         uint256 slaughterTokenID = _mint(msg.sender, _nextTokenId, 1, data);
-         addSlaughterToken(animalTokenID, slaughterTokenID);
+         _mint(msg.sender, _nextTokenId, 1, data);
+         addSlaughterToken(animalTokenId, _nextTokenId);
     }
 
     /**
@@ -103,11 +105,11 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param bestBeforeDate the timestamp representing best before of the product
      * @param batchNo the batchNo of the product
      */
-    function mintProcesingToken(uint256 animalTokenID, uint256 productionDate, uint256 bestBeforeDate, string memory batchNo) public onlyRole(PROCESSOR_ROLE) {
+    function mintProcesingToken(uint256 animalTokenId, uint256 productionDate, uint256 bestBeforeDate, string memory batchNo) public onlyRole(PROCESSOR_ROLE) {
             _nextTokenId++;
             bytes memory data = abi.encode(productionDate, bestBeforeDate, batchNo);
-            uint256 processingTokenId = _mint(msg.sender, _nextTokenId, 1, data);
-            addProcessingToken(animalTokenID, processingTokenId);
+            _mint(msg.sender, _nextTokenId, 1, data);
+            addProcessingToken(animalTokenId, _nextTokenId);
     }
 
     /**
@@ -116,11 +118,11 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param arrivalDate timestamp for time/date of arrival of product into the warehouse
      * @param batchNo the batch number of the product
      */
-    function mintDistributionToken(uint256 animalTokenID, uint256 arrivalDate, bool batchNo) public onlyRole(DISTRIBUTOR_ROLE) {
+    function mintDistributionToken(uint256 animalTokenId, uint256 arrivalDate, bool batchNo) public onlyRole(DISTRIBUTOR_ROLE) {
         _nextTokenId++;
         bytes memory data = abi.encode(arrivalDate, batchNo);
-        uint256 distributionTokenID = _mint(msg.sender, _nextTokenId, 1, data);
-        addDistributorToken(animalTokenID, distributionTokenID)
+        _mint(msg.sender, _nextTokenId, 1, data);
+        addDistributorToken(animalTokenId, _nextTokenId);
     }
 
     /**
@@ -129,11 +131,11 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param arrivalDate timestamp for time/date of arrival of product into the warehouse
      * @param batchNo the batch number of the product
      */
-    function mintRetailToken(uint256 animalTokenID, uint256 arrivalDate, bool batchNo, uint256 bestBeforeDate) public onlyRole(DISTRIBUTOR_ROLE) {
+    function mintRetailToken(uint256 animalTokenId, uint256 arrivalDate, bool batchNo, uint256 bestBeforeDate) public onlyRole(DISTRIBUTOR_ROLE) {
         _nextTokenId++;
         bytes memory data = abi.encode(arrivalDate, batchNo, bestBeforeDate);
-        uint256 retailTokenID = _mint(msg.sender, _nextTokenId, 1, data);
-        addRetailToken(animalTokenID, retailTokenID);
+        _mint(msg.sender, _nextTokenId, 1, data);
+        addRetailToken(animalTokenId, _nextTokenId);
     }
 
     // ---------------------- Add attribute tokens to Animal Tokens ----------------------//
@@ -154,7 +156,7 @@ contract AnimalProductTracker is ERC1155, AccessControl {
     /**
      * Updates the mapping for animal NFT to it's associated slaughter token
      * @param animalTokenId the id of the animal NFR
-     * @param healthTokenId the id of the health attribute token id
+     * @param slaughterTokenId the id of the health attribute token id
      */
     function addSlaughterToken(uint256 animalTokenId, uint256 slaughterTokenId) private {
         require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Farm), "Invalid stage to add slaughter token");
@@ -166,7 +168,7 @@ contract AnimalProductTracker is ERC1155, AccessControl {
     /**
      * Updates the mapping for animal NFT to it's associated health token
      * @param animalTokenId the id of the animal NFR
-     * @param healthTokenId the id of the health attribute token id
+     * @param processingTokenId the id of the health attribute token id
      */
     function addProcessingToken(uint256 animalTokenId, uint256 processingTokenId) private {
         require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Slaughter), "Invalid stage to add slaughter token");
@@ -178,19 +180,19 @@ contract AnimalProductTracker is ERC1155, AccessControl {
     /**
      * Updates the mapping for animal NFT to it's associated health token
      * @param animalTokenId the id of the animal NFR
-     * @param healthTokenId the id of the health attribute token id
+     * @param distributionTokenId the id of the health attribute token id
      */
-    function addDistributorToken(uint256 animalTokenId, uint256 disributorTokenId) private {
+    function addDistributorToken(uint256 animalTokenId, uint256 distributionTokenId) private {
         require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Processing), "Invalid stage to add slaughter token");
         // Add the distibution token
-        animalToLifecycleTokens[animalTokenId][3] = disributorTokenId;
+        animalToLifecycleTokens[animalTokenId][3] = distributionTokenId;
         animalToCurrentStage[animalTokenId] = uint256(CurrentLifecycleStage.Distribution);
     }
 
     /**
      * Updates the mapping for animal NFT to it's associated health token
      * @param animalTokenId the id of the animal NFR
-     * @param healthTokenId the id of the health attribute token id
+     * @param retailTokenId the id of the health attribute token id
      */
     function addRetailToken(uint256 animalTokenId, uint256 retailTokenId) private {
         require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Distribution), "Invalid stage to add slaughter token");
@@ -263,4 +265,7 @@ contract AnimalProductTracker is ERC1155, AccessControl {
     {
         return super.supportsInterface(interfaceId);
     }
+
+    // Getters
+    
 }
