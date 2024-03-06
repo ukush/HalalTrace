@@ -207,9 +207,17 @@ contract AnimalProductTracker is ERC1155, AccessControl {
         addRetailToken(_animalTokenId, _nextTokenId);
     }
 
-    // ----------------------- Setters metadata -------------------------------------------//
+    // ----------------------- Getters and Setters metadata -------------------------------------------//
     /**
-     * Internal function to set the metadata for the animal token
+     * Returns the simple animal metadata given a animal token id
+     * @param _tokenId the animal token id
+     */
+    function getAnimalMetadata(uint256 _tokenId) public view returns (AnimalMetadata memory) {
+        return animalToMetadata[_tokenId];
+    }
+
+    /**
+     * Function to set the metadata for the animal token
      * @param _animalTokenId the id of the animal NFT
      * @param _animalType the type of animal
      * @param _breed the breed of the animal
@@ -223,8 +231,16 @@ contract AnimalProductTracker is ERC1155, AccessControl {
         animalMetadata.supplyChainStage = uint256(CurrentLifecycleStage.Created);
     }
 
+     /**
+     * Returns the health metadata given a animal token id
+     * @param _tokenId the animal token id
+     */
+    function getHealthMetadata(uint256 _tokenId) public view returns (HealthMetadata memory) {
+        return healthTokenToMetadata[_tokenId];
+    }
+
     /**
-     * Internal function to set the metadata for the health token
+     * Function to set the metadata for the health token
      * @param _healthTokenId the id of the health attribute token
      * @param _weight the weight of the animal
      * @param _vetApproved flag for whether vet has approved the animal for slaughter
@@ -235,6 +251,13 @@ contract AnimalProductTracker is ERC1155, AccessControl {
         healthMetadata.vetApproved = _vetApproved;
     }
 
+    /**
+     * Returns the slaughter metadata given a animal token id
+     * @param _tokenId the animal token id
+     */
+    function getSlaughterMetadata(uint256 _tokenId) public view returns (SlaughterMetadata memory) {
+        return slaughterTokenToMetadata[_tokenId];
+    }
     
  /**
      * Set slaughter metadata for a given token ID
@@ -264,6 +287,14 @@ contract AnimalProductTracker is ERC1155, AccessControl {
         metadata.slaughtermanID = _slaughtermanID;
     }
 
+     /**
+     * Returns the processing metadata given a animal token id
+     * @param _tokenId the animal token id
+     */
+    function getProcessingMetadata(uint256 _tokenId) public view returns (ProcessingMetadata memory) {
+        return processingTokenToMetadata[_tokenId];
+    }
+
     /**
      * Set processing metadata for a given token ID
      * @param _tokenId The ID of the token to set metadata for
@@ -284,6 +315,14 @@ contract AnimalProductTracker is ERC1155, AccessControl {
     }
 
     /**
+     * Returns the distribution metadata given a animal token id
+     * @param _tokenId the animal token id
+     */
+    function getDistributionMetadata(uint256 _tokenId) public view returns (DistributionMetadata memory) {
+        return distributionTokenToMetadata[_tokenId];
+    }
+
+    /**
      * Set distribution metadata for a given token ID
      * @param _tokenId The ID of the token to set metadata for
      * @param _arrivalDate Timestamp for the time/date of arrival of the product into the warehouse
@@ -297,6 +336,14 @@ contract AnimalProductTracker is ERC1155, AccessControl {
         DistributionMetadata storage metadata = distributionTokenToMetadata[_tokenId];
         metadata.arrivalDate = _arrivalDate;
         metadata.batchNo = _batchNo;
+    }
+
+    /**
+     * Returns the retail metadata given a animal token id
+     * @param _tokenId the animal token id
+     */
+    function getRetailMetadata(uint256 _tokenId) public view returns (RetailMetadata memory) {
+        return retailTokenToMetadata[_tokenId];
     }
 
     /**
