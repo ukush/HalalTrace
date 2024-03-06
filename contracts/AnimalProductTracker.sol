@@ -15,15 +15,63 @@ contract AnimalProductTracker is ERC1155, AccessControl {
     // For token IDs
     uint256 private _nextTokenId;
 
+    // To store all metadata on chain, define structs for each token
+
+    struct AnimalMetadata {
+        string animalType;
+        string breed;
+        uint256 herdNumber;
+        uint256 supplyChainStage;
+    }
+
+    struct HealthMetadata {
+        uint256 weight;
+        bool vetApproved;
+    }
+
+    struct SlaughterMetadata {
+        uint256 slaughterDate;
+        bool preStunned;
+        string slaughterMethod;
+        string slaughterApparatus;
+        bool invocation;
+        string slaughtermanID;
+    }
+
+    struct ProcessingMetadata {
+        uint256 productionDate;
+        uint256 bestBeforeDate;
+        string batchNo;
+    }
+
+    struct DistributionMetadata {
+        uint256 arrivalDate;
+        bool batchNo;
+    }
+
+    struct RetailMetadata {
+        uint256 arrivalDate;
+        bool batchNo;
+        uint256 bestBeforeDate;
+    }
+
     // Stages of the supply chain
     enum CurrentLifecycleStage {Created, Farm, Slaughter, Processing, Distribution, Retail, Purchased}
 
     // Maps animalTokenID to a attribute token ID
     // Each Animal NFT should only have 5 attribute tokens
-    mapping (uint256 => uint256[5]) public animalToLifecycleTokens;
+    mapping (uint256 => uint256[5]) public animalToAttributeTokens;
 
     // Maps animalTokenID to the current stage in the supply chain
     mapping(uint256 => uint256) public animalToCurrentStage;
+
+    mapping(uint256 => AnimalMetadata) public animalToMetadata;
+    mapping(uint256 => HealthMetadata) public healthTokenToMetadata;
+    mapping(uint256 => SlaughterMetadata) public slaughterTokenToMetadata;
+    mapping(uint256 => ProcessingMetadata) public processingTokenToMetadata;
+    mapping(uint256 => DistributionMetadata) public distributionTokenToMetadata;
+    mapping(uint256 => RetailMetadata) public retailTokenToMetadata;
+
     
     /**
      * When this contract is created, admin access is given to the deployer.
@@ -34,108 +82,240 @@ contract AnimalProductTracker is ERC1155, AccessControl {
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
     }
 
+    //--------------------- Mint Tokens ----------------------------//
+
     /**
      * Mint any number of unique NFTs, each representing a real animal belonging to the farmer.
      * Should be called when a farmer wants to create an NFT for an animal within a herd, usually these are of the same type and breed.
      * Each NFT minted has a unique ID, but has the same base attribute vales, which can be added later.
      * Only a farmer with the MINTER_ROLE can call this function.
      * @param to the address of the farmer or caller of the function
-     * @param animalType the type of animal
-     * @param breed the breed of the animal
-     * @param herdNumber the herd number associated with the animal
-     * @param amount the number of animals in the herd (how many NFTs to mint)
+     * @param _animalType the type of animal
+     * @param _breed the breed of the animal
+     * @param _herdNumber the herd number associated with the animal
      */
-    function mintAnimalNFTs(address to, string memory animalType, string memory breed, uint256 herdNumber, uint256 amount) public onlyRole(FARMER_ROLE) {
-
-        uint256[] memory ids;
-        uint256[] memory amounts;
-
-        // create ids for Animal NFTs
-        for (uint256 i = 0; i < amount; i++) {
-            ids[i] = _nextTokenId++;
-            amounts[i] = 1;
-        }
-
-        // update all the stages to Created
-        for (uint256 i = 0; i < ids.length; i++) {
-            animalToCurrentStage[ids[i]] = uint256(CurrentLifecycleStage.Created);
-        }
-
-        bytes memory data = abi.encode(animalType, breed, herdNumber);
-
-        _mintBatch(to, ids, amounts, data);
-    }
-
-    //--------------------- Mint Tokens ----------------------------//
-
-    /**
-     * Creates a health token and adds to the animal's attribute token mapping
-     * @param animalTokenId the id of the animal NFT
-     * @param weight the weight of the animal
-     * @param vetApproved flag for whether vet has approved the animal for slaughter
-     */
-    function mintHealthToken(uint256 animalTokenId, uint256 weight, bool vetApproved) public onlyRole(FARMER_ROLE) {
+    function mintAnimalNFT(address to,
+    string memory _animalType,
+    string memory _breed,
+    uint256 _herdNumber
+    ) public onlyRole(FARMER_ROLE)
+    {
         _nextTokenId++;
-        bytes memory data = abi.encode(weight, vetApproved);
-        _mint(msg.sender, _nextTokenId, 1, data);
-        addHealthToken(animalTokenId, _nextTokenId);
+        setAnimalMetadata(_nextTokenId, _animalType, _breed, _herdNumber);
+        _mint(to, _nextTokenId, 1, "");
     }
 
     /**
      * Creates a health token and adds to the animal's attribute token mapping
-     * @param animalTokenId the id of the animal NFT
-     * @param slaughterDate the timestamp of the slaughter
-     * @param preStunned flag for whether animal has been stunned before slaughter
-     * @param slaughterMethod the method of slaughter e.g. Mechanical or Hand
-     * @param slaughterApparatus the apparatus used ofor the slaughter
-     * @param invocation flag for whether the invocation of prayer has been recited prior to slaughtering
-     * @param slaughtermanID the id of the person carrying out the slaughter
+     * @param _animalTokenId the id of the animal NFT
+     * @param _weight the weight of the animal
+     * @param _vetApproved flag for whether vet has approved the animal for slaughter
      */
-    function mintSlaughterToken(uint256 animalTokenId, uint256 slaughterDate, bool preStunned, string memory slaughterMethod, string memory slaughterApparatus, bool invocation, string memory slaughtermanID) public onlyRole(SLAUGHTERHOUSE_ROLE) {
+    function mintHealthToken(uint256 _animalTokenId,
+    uint256 _weight,
+    bool _vetApproved
+    ) public onlyRole(FARMER_ROLE)
+    {
         _nextTokenId++;
-         bytes memory data = abi.encode(slaughterDate, preStunned, slaughterMethod, slaughterApparatus, invocation, slaughtermanID);
-         _mint(msg.sender, _nextTokenId, 1, data);
-         addSlaughterToken(animalTokenId, _nextTokenId);
+        setHealthMetadata(_nextTokenId, _weight, _vetApproved);
+        _mint(msg.sender, _nextTokenId, 1, "");
+        addHealthToken(_animalTokenId, _nextTokenId);
+    }
+
+    /**
+     * Creates a health token and adds to the animal's attribute token mapping
+     * @param _animalTokenId the id of the animal NFT
+     * @param _slaughterDate the timestamp of the slaughter
+     * @param _preStunned flag for whether animal has been stunned before slaughter
+     * @param _slaughterMethod the method of slaughter e.g. Mechanical or Hand
+     * @param _slaughterApparatus the apparatus used ofor the slaughter
+     * @param _invocation flag for whether the invocation of prayer has been recited prior to slaughtering
+     * @param _slaughtermanID the id of the person carrying out the slaughter
+     */
+    function mintSlaughterToken( 
+    uint256 _animalTokenId,
+    uint256 _slaughterDate,
+    bool _preStunned,
+    string memory _slaughterMethod,
+    string memory _slaughterApparatus,
+    bool _invocation,
+    string memory _slaughtermanID
+    ) public onlyRole(SLAUGHTERHOUSE_ROLE) 
+    {
+        _nextTokenId++;
+
+        setSlaughterMetadata(_nextTokenId, _slaughterDate, _preStunned, _slaughterMethod, _slaughterApparatus, _invocation, _slaughtermanID);
+        _mint(msg.sender, _nextTokenId, 1, "");
+        addSlaughterToken(_animalTokenId, _nextTokenId);
     }
 
     /**
      * Creates a processing attribute token and adds it to the animal's attribute token mapping
      * @param animalTokenId the id of the animal NFT
-     * @param productionDate the timestamp of production
-     * @param bestBeforeDate the timestamp representing best before of the product
-     * @param batchNo the batchNo of the product
+     * @param _productionDate the timestamp of production
+     * @param _bestBeforeDate the timestamp representing best before of the product
+     * @param _batchNo the batchNo of the product
      */
-    function mintProcesingToken(uint256 animalTokenId, uint256 productionDate, uint256 bestBeforeDate, string memory batchNo) public onlyRole(PROCESSOR_ROLE) {
-            _nextTokenId++;
-            bytes memory data = abi.encode(productionDate, bestBeforeDate, batchNo);
-            _mint(msg.sender, _nextTokenId, 1, data);
-            addProcessingToken(animalTokenId, _nextTokenId);
+    function mintProcesingToken(
+    uint256 animalTokenId,
+    uint256 _productionDate,
+    uint256 _bestBeforeDate,
+    string memory _batchNo
+    ) public onlyRole(PROCESSOR_ROLE)
+    {
+        _nextTokenId++;
+        setProcessingMetadata(_nextTokenId, _productionDate, _bestBeforeDate, _batchNo);
+        _mint(msg.sender, _nextTokenId, 1, "");
+        addProcessingToken(animalTokenId, _nextTokenId);
     }
 
     /**
      * Creates a distribution attribute token and adds it to the animal's attribute token mapping
-     * @param animalTokenId the id of the animal NFT
-     * @param arrivalDate timestamp for time/date of arrival of product into the warehouse
-     * @param batchNo the batch number of the product
+     * @param _animalTokenId the id of the animal NFT
+     * @param _arrivalDate timestamp for time/date of arrival of product into the warehouse
+     * @param _batchNo the batch number of the product
      */
-    function mintDistributionToken(uint256 animalTokenId, uint256 arrivalDate, bool batchNo) public onlyRole(DISTRIBUTOR_ROLE) {
+    function mintDistributionToken(
+        uint256 _animalTokenId,
+        uint256 _arrivalDate,
+        bool _batchNo
+        ) public onlyRole(DISTRIBUTOR_ROLE)
+    {
         _nextTokenId++;
-        bytes memory data = abi.encode(arrivalDate, batchNo);
-        _mint(msg.sender, _nextTokenId, 1, data);
-        addDistributorToken(animalTokenId, _nextTokenId);
+        setDistributionMetadata(_nextTokenId, _arrivalDate, _batchNo);
+        _mint(msg.sender, _nextTokenId, 1, "");
+        addDistributorToken(_animalTokenId, _nextTokenId);
     }
 
     /**
      *  Creates a retail attribute token and adds it to the animal's attribute token mapping
-     * @param animalTokenId the id of the animal NFT
-     * @param arrivalDate timestamp for time/date of arrival of product into the warehouse
-     * @param batchNo the batch number of the product
+     * @param _animalTokenId the id of the animal NFT
+     * @param _arrivalDate timestamp for time/date of arrival of product into the warehouse
+     * @param _batchNo the batch number of the product
+     * @param _bestBeforeDate the best before date given by the retailer
      */
-    function mintRetailToken(uint256 animalTokenId, uint256 arrivalDate, bool batchNo, uint256 bestBeforeDate) public onlyRole(DISTRIBUTOR_ROLE) {
+    function mintRetailToken(
+        uint256 _animalTokenId,
+        uint256 _arrivalDate,
+        bool _batchNo,
+        uint256 _bestBeforeDate
+        ) public onlyRole(DISTRIBUTOR_ROLE) 
+    {
         _nextTokenId++;
-        bytes memory data = abi.encode(arrivalDate, batchNo, bestBeforeDate);
-        _mint(msg.sender, _nextTokenId, 1, data);
-        addRetailToken(animalTokenId, _nextTokenId);
+        setRetailMetadata(_nextTokenId, _arrivalDate, _batchNo, _bestBeforeDate);
+        _mint(msg.sender, _nextTokenId, 1, "");
+        addRetailToken(_animalTokenId, _nextTokenId);
+    }
+
+    // ----------------------- Setters metadata -------------------------------------------//
+    /**
+     * Internal function to set the metadata for the animal token
+     * @param _animalTokenId the id of the animal NFT
+     * @param _animalType the type of animal
+     * @param _breed the breed of the animal
+     * @param _herdNumber the herd number associated with the animal
+     */
+    function setAnimalMetadata(uint256 _animalTokenId, string memory _animalType, string memory _breed, uint256 _herdNumber) private {
+        AnimalMetadata storage animalMetadata = animalToMetadata[_animalTokenId];
+        animalMetadata.animalType = _animalType;
+        animalMetadata.breed = _breed;
+        animalMetadata.herdNumber = _herdNumber;
+        animalMetadata.supplyChainStage = uint256(CurrentLifecycleStage.Created);
+    }
+
+    /**
+     * Internal function to set the metadata for the health token
+     * @param _healthTokenId the id of the health attribute token
+     * @param _weight the weight of the animal
+     * @param _vetApproved flag for whether vet has approved the animal for slaughter
+     */
+    function setHealthMetadata(uint256 _healthTokenId, uint256 _weight, bool _vetApproved) private {
+        HealthMetadata storage healthMetadata = healthTokenToMetadata[_healthTokenId];
+        healthMetadata.weight = _weight;
+        healthMetadata.vetApproved = _vetApproved;
+    }
+
+    
+ /**
+     * Set slaughter metadata for a given token ID
+     * @param _tokenId The ID of the token to set metadata for
+     * @param _slaughterDate The timestamp of the slaughter
+     * @param _preStunned Flag for whether animal has been stunned before slaughter
+     * @param _slaughterMethod The method of slaughter e.g. Mechanical or Hand
+     * @param _slaughterApparatus The apparatus used for the slaughter
+     * @param _invocation Flag for whether the invocation of prayer has been recited prior to slaughtering
+     * @param _slaughtermanID The ID of the person carrying out the slaughter
+     */
+    function setSlaughterMetadata(
+        uint256 _tokenId,
+        uint256 _slaughterDate,
+        bool _preStunned,
+        string memory _slaughterMethod,
+        string memory _slaughterApparatus,
+        bool _invocation,
+        string memory _slaughtermanID
+    ) private {
+        SlaughterMetadata storage metadata = slaughterTokenToMetadata[_tokenId];
+        metadata.slaughterDate = _slaughterDate;
+        metadata.preStunned = _preStunned;
+        metadata.slaughterMethod = _slaughterMethod;
+        metadata.slaughterApparatus = _slaughterApparatus;
+        metadata.invocation = _invocation;
+        metadata.slaughtermanID = _slaughtermanID;
+    }
+
+    /**
+     * Set processing metadata for a given token ID
+     * @param _tokenId The ID of the token to set metadata for
+     * @param _productionDate The timestamp of production
+     * @param _bestBeforeDate The timestamp representing the best before date of the product
+     * @param _batchNo The batch number of the product
+     */
+    function setProcessingMetadata(
+        uint256 _tokenId,
+        uint256 _productionDate,
+        uint256 _bestBeforeDate,
+        string memory _batchNo
+    ) private {
+        ProcessingMetadata storage metadata = processingTokenToMetadata[_tokenId];
+        metadata.productionDate = _productionDate;
+        metadata.bestBeforeDate = _bestBeforeDate;
+        metadata.batchNo = _batchNo;
+    }
+
+    /**
+     * Set distribution metadata for a given token ID
+     * @param _tokenId The ID of the token to set metadata for
+     * @param _arrivalDate Timestamp for the time/date of arrival of the product into the warehouse
+     * @param _batchNo The batch number of the product
+     */
+    function setDistributionMetadata(
+        uint256 _tokenId,
+        uint256 _arrivalDate,
+        bool _batchNo
+    ) private {
+        DistributionMetadata storage metadata = distributionTokenToMetadata[_tokenId];
+        metadata.arrivalDate = _arrivalDate;
+        metadata.batchNo = _batchNo;
+    }
+
+    /**
+     * Set retail metadata for a given token ID
+     * @param _tokenId The ID of the token to set metadata for
+     * @param _arrivalDate Timestamp for the time/date of arrival of the product into the warehouse
+     * @param _batchNo The batch number of the product
+     * @param _bestBeforeDate The best before date given by the retailer
+     */
+    function setRetailMetadata(
+        uint256 _tokenId,
+        uint256 _arrivalDate,
+        bool _batchNo,
+        uint256 _bestBeforeDate
+    ) private {
+        RetailMetadata storage metadata = retailTokenToMetadata[_tokenId];
+        metadata.arrivalDate = _arrivalDate;
+        metadata.batchNo = _batchNo;
+        metadata.bestBeforeDate = _bestBeforeDate;
     }
 
     // ---------------------- Add attribute tokens to Animal Tokens ----------------------//
@@ -145,11 +325,13 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param animalTokenId the id of the animal NFR
      * @param healthTokenId the id of the health attribute token id
      */
-    function addHealthToken(uint256 animalTokenId, uint256 healthTokenId) private {
+    function addHealthToken(uint256 animalTokenId, uint256 healthTokenId) 
+    private 
+    {
         require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Created), "Health token already added or invalid stage");
       
         // Add the health token
-        animalToLifecycleTokens[animalTokenId][0] = healthTokenId;
+        animalToAttributeTokens[animalTokenId][0] = healthTokenId;
         animalToCurrentStage[animalTokenId] = uint256(CurrentLifecycleStage.Farm);
     }
 
@@ -158,10 +340,12 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param animalTokenId the id of the animal NFR
      * @param slaughterTokenId the id of the health attribute token id
      */
-    function addSlaughterToken(uint256 animalTokenId, uint256 slaughterTokenId) private {
+    function addSlaughterToken(uint256 animalTokenId, uint256 slaughterTokenId) 
+    private 
+    {
         require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Farm), "Invalid stage to add slaughter token");
         // Add the slaughter token
-        animalToLifecycleTokens[animalTokenId][1] = slaughterTokenId;
+        animalToAttributeTokens[animalTokenId][1] = slaughterTokenId;
         animalToCurrentStage[animalTokenId] = uint256(CurrentLifecycleStage.Slaughter);
     }
 
@@ -170,10 +354,12 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param animalTokenId the id of the animal NFR
      * @param processingTokenId the id of the health attribute token id
      */
-    function addProcessingToken(uint256 animalTokenId, uint256 processingTokenId) private {
+    function addProcessingToken(uint256 animalTokenId, uint256 processingTokenId) 
+    private 
+    {
         require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Slaughter), "Invalid stage to add slaughter token");
         // Add the processing token
-        animalToLifecycleTokens[animalTokenId][2] = processingTokenId;
+        animalToAttributeTokens[animalTokenId][2] = processingTokenId;
         animalToCurrentStage[animalTokenId] = uint256(CurrentLifecycleStage.Processing);
     }
 
@@ -182,10 +368,12 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param animalTokenId the id of the animal NFR
      * @param distributionTokenId the id of the health attribute token id
      */
-    function addDistributorToken(uint256 animalTokenId, uint256 distributionTokenId) private {
+    function addDistributorToken(uint256 animalTokenId, uint256 distributionTokenId) 
+    private 
+    {
         require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Processing), "Invalid stage to add slaughter token");
         // Add the distibution token
-        animalToLifecycleTokens[animalTokenId][3] = distributionTokenId;
+        animalToAttributeTokens[animalTokenId][3] = distributionTokenId;
         animalToCurrentStage[animalTokenId] = uint256(CurrentLifecycleStage.Distribution);
     }
 
@@ -194,66 +382,24 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param animalTokenId the id of the animal NFR
      * @param retailTokenId the id of the health attribute token id
      */
-    function addRetailToken(uint256 animalTokenId, uint256 retailTokenId) private {
+    function addRetailToken(uint256 animalTokenId, uint256 retailTokenId) 
+    private 
+    {
         require(animalToCurrentStage[animalTokenId] == uint256(CurrentLifecycleStage.Distribution), "Invalid stage to add slaughter token");
         // Add the retail token
-        animalToLifecycleTokens[animalTokenId][4] = retailTokenId;
+        animalToAttributeTokens[animalTokenId][4] = retailTokenId;
         animalToCurrentStage[animalTokenId] = uint256(CurrentLifecycleStage.Retail);
     }
-    
+
     /**
-     * Allow the admin (owner of the contract) to grant mint access to a specific address
-     * @param farmer the address of the farmer to which minter role is to be granted
+     * Allow the admin (owner of the contract) to grant a specific role to a user address
+     * @param role the role to be granted (FARMER_ROLE, SLAUGHTERHOUSE_ROLE, etc.)
+     * @param user the address of the user to which the role is to be granted
      */
-    function grantMintAccess(address farmer)
-    public 
-    onlyRole(DEFAULT_ADMIN_ROLE)
+    function grantUserRole(bytes31 role, address user)
+    public onlyRole(DEFAULT_ADMIN_ROLE)
     {
-        _grantRole(FARMER_ROLE, farmer);
-    }
-
-    /**
-     * Allow the admin (owner of the contract) to grant mint access to a specific address
-     * @param slaughterhouse the address of the slaughterhouse to which minter role is to be granted
-     */
-    function grantSlaughterhouseRole(address slaughterhouse)
-    public 
-    onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        _grantRole(SLAUGHTERHOUSE_ROLE, slaughterhouse);
-    }
-
-    /**
-     * Allow the admin (owner of the contract) to grant mint access to a specific address
-     * @param processor the address of the processor to which minter role is to be granted
-     */
-    function grantProcessorRole(address processor)
-    public 
-    onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        _grantRole(PROCESSOR_ROLE, processor);
-    }
-
-    /**
-    * Allow the admin (owner of the contract) to grant mint access to a specific address
-    * @param distributor the address of the processor to which minter role is to be granted
-    */
-    function grantDistributorRole(address distributor)
-    public 
-    onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        _grantRole(DISTRIBUTOR_ROLE, distributor);
-    }
-
-    /**
-    * Allow the admin (owner of the contract) to grant mint access to a specific address
-    * @param retailer the address of the processor to which minter role is to be granted
-    */
-    function grantRetailerRole(address retailer)
-    public 
-    onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        _grantRole(RETAILER_ROLE, retailer);
+        _grantRole(role, user);
     }
 
     // The following functions are overrides required by Solidity.
