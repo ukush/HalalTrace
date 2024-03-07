@@ -76,10 +76,9 @@ contract AnimalProductTracker is ERC1155, AccessControl {
     /**
      * When this contract is created, admin access is given to the deployer.
      * Mint access can only be granted by the admin and is only given to farmers once they've been verified off-chain
-     * @param defaultAdmin the address of the owner of the contract
      */
-    constructor(address defaultAdmin) ERC1155("") {
-        _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
+    constructor() ERC1155("") {
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     //--------------------- Mint Tokens ----------------------------//

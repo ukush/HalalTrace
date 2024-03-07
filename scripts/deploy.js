@@ -7,7 +7,11 @@
 const hre = require("hardhat");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
+  const deployAddress = 0x00;
+
+  const tracker = await hre.ethers.deployContract("AnimalProductTracker", [address], {
+    value: deployAddress
+  });
 }
 
 // We recommend this pattern to be able to use async/await everywhere
