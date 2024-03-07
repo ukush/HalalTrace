@@ -11,18 +11,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: test workflow
-        run: echo "It works!"
-      # - uses: actions/checkout@v2
-      # - uses: actions/setup-node@v2
-      #   with:
-      #       node-version: '16.14.0'
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+            node-version: '16.14.0'
         
-      # - name: "Install dependencies"
-      #   run: npm install
+      - name: "Install dependencies"
+        run: npm install
     
-      # - name: "Compile project"
-      #   run: npx hardhat compile
+      - name: "Compile project"
+        run: npx hardhat compile
     
-      # - name: "Run hardhat tests"
-      #   run: npx hardhat test test/
+      - name: "Run hardhat tests"
+        run: npx hardhat test test/
