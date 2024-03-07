@@ -13,7 +13,14 @@ module.exports = {
   },
   gasReporter: {
     enabled: (process.env.REPORT_GAS) ? true : false
-  }
+  },
+  networks: {
+    hardhat: {},
+    mumbai: {
+      url: API_URL,
+      accounts: [`0x${PRIVATE_KEY}`],
+    },
+  },
 };
 
 
