@@ -7,11 +7,11 @@
 const hre = require("hardhat");
 
 async function main() {
-  const animalNFT = await hre.ethers.getContractFactory("AnimalProductTracker");
+  
+  const nft = await hre.ethers.deployContract("AnimalProductTracker");
+  await nft.waitForDeployment();
 
-  const nft = await animalNFT.deploy();
-
-  console.log("deployed to ", nft.getAddress())
+  console.log(`deployed to ${nft.target}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

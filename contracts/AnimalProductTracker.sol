@@ -235,7 +235,8 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param _tokenId the animal token id
      */
     function getHealthMetadata(uint256 _tokenId) public view returns (HealthMetadata memory) {
-        return healthTokenToMetadata[_tokenId];
+        uint256 healthTokenID = animalToAttributeTokens[_tokenId][0];
+        return healthTokenToMetadata[healthTokenID];
     }
 
     /**
@@ -255,7 +256,8 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param _tokenId the animal token id
      */
     function getSlaughterMetadata(uint256 _tokenId) public view returns (SlaughterMetadata memory) {
-        return slaughterTokenToMetadata[_tokenId];
+        uint256 slaughterTokenID = animalToAttributeTokens[_tokenId][1];
+        return slaughterTokenToMetadata[slaughterTokenID];
     }
     
  /**
@@ -291,7 +293,8 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param _tokenId the animal token id
      */
     function getProcessingMetadata(uint256 _tokenId) public view returns (ProcessingMetadata memory) {
-        return processingTokenToMetadata[_tokenId];
+        uint256 processingTokenID = animalToAttributeTokens[_tokenId][2];
+        return processingTokenToMetadata[processingTokenID];
     }
 
     /**
@@ -318,7 +321,8 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param _tokenId the animal token id
      */
     function getDistributionMetadata(uint256 _tokenId) public view returns (DistributionMetadata memory) {
-        return distributionTokenToMetadata[_tokenId];
+        uint256 distributionTokenID = animalToAttributeTokens[_tokenId][3];
+        return distributionTokenToMetadata[distributionTokenID];
     }
 
     /**
@@ -342,7 +346,8 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param _tokenId the animal token id
      */
     function getRetailMetadata(uint256 _tokenId) public view returns (RetailMetadata memory) {
-        return retailTokenToMetadata[_tokenId];
+        uint256 retailTokenID = animalToAttributeTokens[_tokenId][4];
+        return retailTokenToMetadata[retailTokenID];
     }
 
     /**
@@ -442,10 +447,11 @@ contract AnimalProductTracker is ERC1155, AccessControl {
      * @param role the role to be granted (FARMER_ROLE, SLAUGHTERHOUSE_ROLE, etc.)
      * @param user the address of the user to which the role is to be granted
      */
-    function grantUserRole(bytes31 role, address user)
+    function grantUserRole(string memory role, address user)
     public onlyRole(DEFAULT_ADMIN_ROLE)
     {
-        _grantRole(role, user);
+        bytes32 bytesrole = bytes32(uint256(keccak256(abi.encodePacked(role))));
+        _grantRole(bytesrole, user);
     }
 
     // The following functions are overrides required by Solidity.
@@ -457,7 +463,5 @@ contract AnimalProductTracker is ERC1155, AccessControl {
     {
         return super.supportsInterface(interfaceId);
     }
-
-    // Getters
     
 }

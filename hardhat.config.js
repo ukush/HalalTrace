@@ -1,6 +1,7 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-contract-sizer");
 require("hardhat-gas-reporter");
+require("dotenv").config()
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -17,8 +18,8 @@ module.exports = {
   networks: {
     hardhat: {},
     mumbai: {
-      url: API_URL,
-      accounts: [`0x${PRIVATE_KEY}`],
+      url: process.env.MUMBAI_API_URL,
+      accounts: [`0x${process.env.PRIVATE_KEY}`],
     },
   },
 };
