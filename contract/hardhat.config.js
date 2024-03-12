@@ -1,7 +1,9 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("hardhat-contract-sizer");
 require("hardhat-gas-reporter");
-require("dotenv").config()
+require("dotenv").config();
+require("@nomicfoundation/hardhat-ethers");
+
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -18,7 +20,7 @@ module.exports = {
   networks: {
     hardhat: {},
     mumbai: {
-      url: process.env.MUMBAI_API_URL,
+      url: "https://polygon-mumbai.g.alchemy.com/v2/FSlEM6s2TxPfCzGvPO6DAjTx5SOiSKS0",
       accounts: [`0x${process.env.PRIVATE_KEY}`],
     },
   },
