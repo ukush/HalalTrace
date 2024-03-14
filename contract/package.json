@@ -4,6 +4,7 @@
     "@nomicfoundation/edr": "^0.2.1",
     "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
     "ethers": "^6.11.1",
     "hardhat": "^2.20.1",
     "hardhat-contract-sizer": "^2.10.0",
@@ -11,7 +12,6 @@
   },
   "dependencies": {
     "@nomicfoundation/edr-linux-x64-gnu": "^0.2.1",
-    "@openzeppelin/contracts": "^5.0.2",
     "dotenv": "^16.4.5"
   }
 }
