@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { ethers } from "ethers";
 
 function AnimalForm() {
 
@@ -12,9 +11,6 @@ function AnimalForm() {
   const submitForm = async (e) => {
     e.preventDefault()
 
-    // communicate with the smart contract
-    //const contract_address = "0x6fA101bc3C631decC212D6c30FabE0e72BD3C72a"
-
     const formData = {
       animalType : animalType,
       animalBreed : animalBreed,
@@ -22,22 +18,23 @@ function AnimalForm() {
     }
 
     try {
-    
     // construct the request and fetch the response
-    const response = await fetch('/api/healthform', {
+    const response = await fetch('http://localhost:3000/api/nft', {
       method: 'POST',
       headers: {
-        'Content-Type': 'Application/json'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(formData)
     });
 
+    console.log(response.statusText);
+    
     // check the response
-    if (!response.ok) {
+    if (!response.status ==200) {
       console.log('Network response was not ok')  
     }
 
-  }catch (error) {
+  } catch (error) {
     console.error('There was an error sending the form data');
   }
   }

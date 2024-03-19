@@ -1,11 +1,22 @@
 var createError = require('http-errors');
 var express = require('express');
+require('dotenv').config()
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
+var mongoose = require('mongoose')
 
+// database connection
+mongoose.connect(process.env.DATABASE_URL, {useNewUrlParser: true})
+const db = mongoose.connection
+db.on('error', (error) => console.log(error))
+db.once('open', () => console.log('Connected to Database'))
+
+// import routes
 var indexRouter = require('./routes/index');
-var ApiRouter = require('./routes/api/healthform');
+var userRouter = require('./routes/users')
+var apiRoute = require('./routes/api')
 
 var app = express();
 
@@ -19,8 +30,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/api/healthform', ApiRouter);
+app.use(cors());
+
+// use routes
+app.use('/', indexRouter)
+app.use('/users', userRouter)
+app.use('/api', apiRoute)
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
