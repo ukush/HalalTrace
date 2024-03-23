@@ -20,7 +20,7 @@ module.exports = {
   networks: {
     hardhat: {},
     mumbai: {
-      url: "https://polygon-mumbai.g.alchemy.com/v2/FSlEM6s2TxPfCzGvPO6DAjTx5SOiSKS0",
+      url: process.env.MUMBAI_API_URL,
       accounts: [`0x${process.env.PRIVATE_KEY}`],
     },
   },
