@@ -11,11 +11,11 @@ module.exports = {
   contractSizer: {
     alphaSort: true,
     disambiguatePaths: false,
-    runOnCompile: true,
+    runOnCompile: false,
     strict: true,
   },
   gasReporter: {
-    enabled: (process.env.REPORT_GAS) ? true : false
+    enabled: false
   },
   networks: {
     hardhat: {},

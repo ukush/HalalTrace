@@ -8,7 +8,7 @@ const hre = require("hardhat");
 
 async function main() {
   
-  const nft = await hre.ethers.deployContract("AnimalProductTracker");
+  const nft = await hre.ethers.deployContract("ProductTracker");
   await nft.waitForDeployment();
 
   console.log(`deployed to ${nft.target}`);
