@@ -44,14 +44,7 @@ jobs:
         run: |
          npm install
          pwd
-
-      - name: "Check npm install success and path to OpenZeppelin Contracts"
-        run: |
-          if [ -d "node_modules/@openzeppelin/contracts" ]; then
-            echo "npm install succeeded."
-            echo "Path to OpenZeppelin Contracts: $(pwd)/node_modules/@openzeppelin/contracts"
-          else
-            echo "npm install failed or OpenZeppelin Contracts not found."
+         find ./node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol
 
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
