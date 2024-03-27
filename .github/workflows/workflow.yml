@@ -41,7 +41,9 @@ jobs:
         run: python3 -m pip install slither-analyzer
 
       - name: "Run static analysis"
-        run: slither .
+        run: | 
+          cd contracts/contract
+          slither .
 
       
   deploy-to-mumbai:
