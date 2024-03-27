@@ -41,10 +41,7 @@ jobs:
           node-version: '16.x'
         
       - name: "Install dependencies"
-        run: |
-         npm install
-         pwd
-         find ./node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol
+        run: npm install
 
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -60,7 +57,7 @@ jobs:
 
       - name: "Run static analysis"
         run:
-          cd contract
+          #cd contract
           slither ./contracts/NFTTracker.sol --solc-remaps @openzeppelin=./node_modules/@openzeppelin --exclude naming-convention,external-function,low-level-calls
 
       
