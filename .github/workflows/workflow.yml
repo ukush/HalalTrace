@@ -42,7 +42,7 @@ jobs:
 
       - name: "Run static analysis"
         run: | 
-          cd contracts/contract
+          cd contract/contracts
           slither .
 
       
