@@ -57,8 +57,7 @@ jobs:
 
       - name: "Run static analysis"
         run:
-          pwd;
-          slither ./contracts/NFTTracker.sol --solc-remaps @openzeppelin=./node_modules/@openzeppelin --exclude naming-convention,external-function,low-level-calls
+          slither $(pwd)/contracts/NFTTracker.sol --solc-remaps @openzeppelin=$(pwd)/node_modules/@openzeppelin --exclude naming-convention,external-function,low-level-calls
 
       
   #deploy-to-mumbai:
