@@ -43,7 +43,6 @@ jobs:
       - name: "Install dependencies"
         run: |
          npm install
-         npm install @openzeppelin/contracts
 
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -53,13 +52,13 @@ jobs:
       - name: "Install slither"
         run: |
           python3 -m pip install solc-select
-          solc-select install 0.8.20
-          solc-select use 0.8.20
+          solc-select install 0.8.25
+          solc-select use 0.8.25
           python3 -m pip install slither-analyzer
 
       - name: "Run static analysis"
         run:
-          slither $(pwd)/contracts/NFTTracker.sol --solc-remaps @openzeppelin=$(pwd)/node_modules/@openzeppelin --exclude naming-convention,external-function,low-level-calls
+          slither ./contracts/NFTTracker.sol --solc-remaps @openzeppelin=./node_modules/@openzeppelin --exclude naming-convention,external-function,low-level-calls
 
       
   #deploy-to-mumbai:
