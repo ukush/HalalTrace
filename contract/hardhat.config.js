@@ -3,27 +3,28 @@ require("hardhat-contract-sizer");
 require("hardhat-gas-reporter");
 require("dotenv").config();
 require("@nomicfoundation/hardhat-ethers");
+require("@nomicfoundation/hardhat-ignition-ethers");
 
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
-  solidity: "0.8.24",
-  contractSizer: {
-    alphaSort: true,
-    disambiguatePaths: false,
-    runOnCompile: false,
-    strict: true,
-  },
-  gasReporter: {
-    enabled: false
-  },
+  solidity: "0.8.20",
   networks: {
     hardhat: {},
     mumbai: {
-      url: "https://polygon-mumbai.g.alchemy.com/v2/FSlEM6s2TxPfCzGvPO6DAjTx5SOiSKS0",
+    url: process.env.MUMBAI_URL,
       accounts: [`0x${process.env.PRIVATE_KEY}`],
     },
   },
+  contractSizer: {
+    alphaSort: true,
+    disambiguatePaths: false,
+    runOnCompile: process.env.CONTRACT_SIZER,
+    strict: true,
+  },
+  gasReporter: {
+    enabled: process.env.GAS_REPORTER
+  }
 };
 
 
