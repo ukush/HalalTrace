@@ -1,4 +1,5 @@
 var express = require('express');
+const { default: setUpIPFS } = require('../utilities/ipfs');
 var router = express.Router();
 
 /**
@@ -38,12 +39,19 @@ router.post('/:id/farming', function(req, res) {
     const animalId = req.params.id;
     data = req.body;
 
+    console.log('Received form data for animal ID', animalId, ':', data);
+
     // 1. Create a URL
     // 2. Publish to IPFS
     // 3. Call the updateTrace() function from my contract - this is assuming it already exists
 
-
-    console.log('Received form data for animal ID', animalId, ':', data);
+    //setup IPFS
+    try {
+      setUpIPFS()
+      console.log("IPFS setup successful");
+    } catch (error) {
+      console.error("Error setting up IPFS", error)
+    }
     res.sendStatus(200); // Send a success status code back to the client
   });
 
