@@ -27,7 +27,10 @@ function App() {
     });
 
     try {
-      const response = await fetch(`http://localhost:3000/api/${endpoint}`, {
+
+      const animalId = data.animalId;
+
+      const response = await fetch(`http://localhost:3000/api/${animalId}/${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

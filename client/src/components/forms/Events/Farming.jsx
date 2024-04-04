@@ -21,6 +21,11 @@ function FarmingForm({ onSubmit }) {
     setFormData(initialFormData); // Clear form data after submission
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
   return (
     <div>
       <h2>Farming Form</h2>
@@ -30,7 +35,7 @@ function FarmingForm({ onSubmit }) {
         <form onSubmit={handleSubmit}>
           <div>
             <label htmlFor="animalId">Animal ID:</label>
-            <input type="text" id="animalId" name="animalId" required />
+            <input type="text" id="animalId" name="animalId" value={formData.animalId} onChange={handleInputChange} required />
           </div>
           <div>
             <label htmlFor="weight">Weight:</label>
