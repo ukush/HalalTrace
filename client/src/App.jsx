@@ -1,114 +1,21 @@
-import { useState } from 'react'
-import './App.css'
-import FarmingForm from './components/forms/Events/Farming';
-import SlaughteringForm from './components/forms/Events/Slaughtering';
-import ProcessingForm from './components/forms/Events/Processing';
-import DistributionForm from './components/forms/Events/Distribution';
-import RetailForm from './components/forms/Events/Retail';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import Navbar from './components/nav/Navbar';
+import Register from './pages/Register';
+import Trace from './pages/Trace';
+import Record from './pages/Record';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('Farming');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-    setIsSubmitted(false);
-  };
-
-  
-  const getAnimalDetails = async (animalId, endpoint) => {
-    try {
-      const response = await fetch(`http://localhost:3000/api/${animalId}/${endpoint}`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      console.log(data);
-      // Further handling of the data if needed
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-  
-
-  const handleSubmit = async (event, endpoint) => {
-    event.preventDefault();
-    
-    // Serialize form data
-    const formData = new FormData(event.target);
-    const data = {};
-    formData.forEach((value, key) => {
-      data[key] = value;
-    });
-
-    try {
-
-      const animalId = data.animalId;
-
-      const response = await fetch(`http://localhost:3000/api/${animalId}/${endpoint}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        setIsSubmitted(true); // Set the submission status to true on successful submission
-        console.log('Form data submitted successfully');
-      } else {
-        console.error('Failed to submit form data');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-
-  const renderForm = () => {
-    if (isSubmitted) {
-      return (
-        <div>
-          <p>Form has been submitted</p>
-          <button onClick={() => setIsSubmitted(false)}>Make Another Submission</button>
-          <button onClick={() => getAnimalDetails(1, "farming")}> See Details of Event </button>
-        </div>
-      );
-    } else {
-    switch (activeTab) {
-      case 'Farming':
-        return <FarmingForm onSubmit={(event) => handleSubmit(event, 'farming')} />;
-      case 'Slaughtering':
-        return <SlaughteringForm onSubmit={(event) => handleSubmit(event, 'slaughter')}/>;
-      case 'Processing':
-        return <ProcessingForm onSubmit={(event) => handleSubmit(event, 'processing')} />
-      case 'Distribution':
-        return <DistributionForm onSubmit={(event) => handleSubmit(event, 'distribution')} />
-      case 'Retail':
-        return <RetailForm onSubmit={(event) => handleSubmit(event, 'retail')} />
-      default:
-        return null;
-    }
-  }
-  };
-
-
   return (
-    <div>
-    <nav>
-      <ul>
-        <li className={activeTab === 'Farming' ? 'active' : ''} onClick={() => handleTabClick('Farming')}>Farming</li>
-        <li className={activeTab === 'Slaughtering' ? 'active' : ''} onClick={() => handleTabClick('Slaughtering')}>Slaughtering</li>
-        <li className={activeTab === 'Processing' ? 'active' : ''} onClick={() => handleTabClick('Processing')}>Processing</li>
-        <li className={activeTab === 'Distribution' ? 'active' : ''} onClick={() => handleTabClick('Distribution')}>Distribution</li>
-        <li className={activeTab === 'Retail' ? 'active' : ''} onClick={() => handleTabClick('Retail')}>Retail</li>
-      </ul>
-    </nav>
-    <div className="form-container">
-      {renderForm()}
-    </div>
-  </div>
-  )
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Register />} />
+        <Route path="/trace" element={<Trace />} />
+        <Route path="/record" element={<Record />} />
+  </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

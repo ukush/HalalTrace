@@ -108,3 +108,32 @@ button:hover {
   background-color: #0056b3;
 }
 
+/* Navbar Styles */
+.navbar {
+  background-color: #333;
+  padding: 5px 0; /* Adjusted padding */
+  position: fixed; /* Fixed positioning */
+  width: 50%; /* 50% width */
+  top: 10px; /* Align to the top */
+  left: 50%; /* Move left edge to the middle */
+  transform: translateX(-50%); /* Center horizontally */
+  text-align: center; /* Center align text */
+}
+
+.navbar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbar li {
+  cursor: pointer;
+  padding: 5px 10px; /* Adjusted padding */
+  color: white;
+}
+
+.navbar li.active {
+  background-color: #555;
+}
