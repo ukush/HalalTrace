@@ -84,7 +84,21 @@ contract ProductTracker is ERC721("HalalTrace", "HTrace") {
     /**
     * @dev function to return the details for a given animal product
     */
-    function getAnimalDetails(uint256 tokenId) public view returns (NFT memory) {
-        return id2NFT[tokenId];
+    function getAnimalDetails(uint256 tokenId) 
+        public 
+        view 
+        returns (
+            string memory, 
+            string memory, 
+            uint256,
+            Event[] memory
+        ) 
+    {
+        return (
+            id2NFT[tokenId].animalType,
+            id2NFT[tokenId].breed,
+            id2NFT[tokenId].herdNumber,
+            id2NFT[tokenId].trace
+        );
     }
 }
