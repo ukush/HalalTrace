@@ -1,5 +1,4 @@
 var express = require('express');
-const { default: setUpIPFS } = require('../utilities/ipfs');
 var router = express.Router();
 
 /**
@@ -29,73 +28,72 @@ var router = express.Router();
  */
 
 
-router.get('/:id/farming', function(req, res, next) {
-    const animalId = req.params.id;
-    // Call the contract code to retreive the data
-    res.json({})
+router.get('/:id/farming', function(req, res) {
+    //const animalId = req.params.id;
+
+    res.sendStatus(200);
+    
+    // import('../utilities/helia.js').then(({ getIPFSContent}) => {
+    //   getIPFSContent("bagaaieraevjao3ade4uvjoxbhiil6fgjxfdinnuvgiipj4wpjy54uf2zxata");
+    // })
 });
 
 router.post('/:id/farming', function(req, res) {
     const animalId = req.params.id;
+    let cid;
     data = req.body;
 
     console.log('Received form data for animal ID', animalId, ':', data);
+    
+    // store data on ipfs
+    import('../utilities/helia.mjs').then(async ({ addToIPFS}) => {
+      cid = await addToIPFS(data)
+     })
 
-    // 1. Create a URL
-    // 2. Publish to IPFS
-    // 3. Call the updateTrace() function from my contract - this is assuming it already exists
-
-    //setup IPFS
-    try {
-      setUpIPFS()
-      console.log("IPFS setup successful");
-    } catch (error) {
-      console.error("Error setting up IPFS", error)
-    }
-    res.sendStatus(200); // Send a success status code back to the client
+    res.sendStatus(200);
   });
 
-  router.get('/slaughter', function(req, res, next) {
-    res.json({})
-});
+//   router.get('/slaughter', function(req, res, next) {
+//     res.json({})
+// });
 
-router.post('/:id/slaughter', function(req, res) {
-    const animalId = req.params.id;
-    data = req.body;
-    console.log('Received form data for animal ID', animalId, ':', data);
-    res.sendStatus(200); // Send a success status code back to the client
-  });
+// router.post('/:id/slaughter', function(req, res) {
+//     const animalId = req.params.id;
+//     data = req.body;
+//     console.log('Received form data for animal ID', animalId, ':', data);
+//     res.sendStatus(200); // Send a success status code back to the client
+//   });
 
-  router.get('/:id/processing', function(req, res, next) {
-    res.json({})
-});
+//   router.get('/:id/processing', function(req, res, next) {
+//     res.json({})
+// });
 
-router.post('/:batch/processing', function(req, res) {
-    const batchNo = req.params.batch;
-    data = req.body;
-    console.log('Received form data:', data);
-    res.sendStatus(200); // Send a success status code back to the client
-  });
+// router.post('/:batch/processing', function(req, res) {
+//     const batchNo = req.params.batch;
+//     data = req.body;
+//     console.log('Received form data:', data);
+//     res.sendStatus(200); // Send a success status code back to the client
+//   });
 
-  router.get('/:batch/distribution', function(req, res, next) {
-    res.json({})
-});
+//   router.get('/:batch/distribution', function(req, res, next) {
+//     res.json({})
+// });
 
-router.post('/:batch/distribution', function(req, res) {
-    const batchNo = req.params.batch;
-    data = req.body;
-    console.log('Received form data:', data);
-    res.sendStatus(200); // Send a success status code back to the client
-  });
+// router.post('/:batch/distribution', function(req, res) {
+//     const batchNo = req.params.batch;
+//     data = req.body;
+//     console.log('Received form data:', data);
+//     res.sendStatus(200); // Send a success status code back to the client
+//   });
 
-  router.get('/retail', function(req, res, next) {
-    res.json({})
-});
+//   router.get('/retail', function(req, res, next) {
+//     res.json({})
+// });
 
-router.post('/retail', function(req, res) {
-    data = req.body;
-    console.log('Received form data:', data);
-    res.sendStatus(200); // Send a success status code back to the client
-  });
+// router.post('/retail', function(req, res) {
+//     data = req.body;
+//     console.log('Received form data:', data);
+//     res.sendStatus(200); // Send a success status code back to the client
+//   });
 
 module.exports = router;
