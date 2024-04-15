@@ -48,6 +48,9 @@ const addToIPFS = async (data) => {
         const jsonHelia = json(heliaNode)
         const cid = await jsonHelia.add(data)
         console.log('Added file:', cid.toString());
+
+        console.log(await jsonHelia.get(cid));
+
         return cid.toString();
 
     } catch (error) {
@@ -57,9 +60,11 @@ const addToIPFS = async (data) => {
 }
 
 const getIPFSContent = async (cid) => {
+    const heliaNode = await createNode()
+    const jsonHelia = json(heliaNode)
     const data = await jsonHelia.get(cid)
-    console.log(`Data at ${cid}: ${data}`);
-    return data
+    // console.log(`Data at ${cid}: ${data}`);
+    // return data
 }
 
 export { addToIPFS, getIPFSContent }

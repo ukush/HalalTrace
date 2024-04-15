@@ -29,13 +29,13 @@ var router = express.Router();
 
 
 router.get('/:id/farming', function(req, res) {
-    //const animalId = req.params.id;
+    const animalId = req.params.id;
 
-    res.sendStatus(200);
+    //res.sendStatus(200);
     
-    // import('../utilities/helia.js').then(({ getIPFSContent}) => {
-    //   getIPFSContent("bagaaieraevjao3ade4uvjoxbhiil6fgjxfdinnuvgiipj4wpjy54uf2zxata");
-    // })
+    import('../utilities/helia.mjs').then(({ getIPFSContent}) => {
+      getIPFSContent("bagaaieraevjao3ade4uvjoxbhiil6fgjxfdinnuvgiipj4wpjy54uf2zxata");
+    })
 });
 
 router.post('/:id/farming', function(req, res) {
@@ -46,9 +46,13 @@ router.post('/:id/farming', function(req, res) {
     console.log('Received form data for animal ID', animalId, ':', data);
     
     // store data on ipfs
-    import('../utilities/helia.mjs').then(async ({ addToIPFS}) => {
+    import('../utilities/helia.mjs').then(async ({ addToIPFS }) => {
       cid = await addToIPFS(data)
      })
+
+    //  import('../utilities/ipfsUtils.mjs').then(async ({ default: storeData }) => {
+    //   await storeData(animalId, data)
+    //  })
 
     res.sendStatus(200);
   });

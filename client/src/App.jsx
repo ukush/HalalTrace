@@ -16,6 +16,22 @@ function App() {
     setIsSubmitted(false);
   };
 
+  
+  const getAnimalDetails = async (animalId, endpoint) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/${animalId}/${endpoint}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      console.log(data);
+      // Further handling of the data if needed
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
+
   const handleSubmit = async (event, endpoint) => {
     event.preventDefault();
     
@@ -55,6 +71,7 @@ function App() {
         <div>
           <p>Form has been submitted</p>
           <button onClick={() => setIsSubmitted(false)}>Make Another Submission</button>
+          <button onClick={() => getAnimalDetails(1, "farming")}> See Details of Event </button>
         </div>
       );
     } else {
