@@ -13,6 +13,7 @@
     "@libp2p/bootstrap": "^10.0.19",
     "@libp2p/identify": "^1.0.18",
     "@libp2p/tcp": "^9.0.12",
+    "axios": "^1.6.8",
     "blockstore-core": "^4.4.1",
     "body-parser": "^1.20.2",
     "cookie-parser": "~1.4.4",
@@ -20,6 +21,7 @@
     "datastore-core": "^9.1.1",
     "debug": "~2.6.9",
     "dotenv": "^16.4.5",
+    "ethers": "^5.7.2",
     "express": "~4.16.1",
     "helia": "^4.0.1",
     "http-errors": "~1.6.3",
@@ -29,7 +31,9 @@
     "libp2p": "^1.4.0",
     "mongoose": "^8.2.2",
     "morgan": "~1.9.1",
+    "multiformats": "^13.1.0",
     "nft.storage": "^7.1.1",
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "web3": "^4.7.0"
   }
 }

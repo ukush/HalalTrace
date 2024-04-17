@@ -27,33 +27,50 @@ var router = express.Router();
  * 
  */
 
+router.post('/nft/mint/:id', function(req, res) {
+  res.set('Access-Control-Allow-Origin', '*');
+  const data = req.body
+  console.log(`request object: ${JSON.stringify(data)}`)
+
+  // Pass the body to the function that calls the smart contract mint function
+
+
+  res.sendStatus(200);
+
+})
+
 
 router.get('/:id/farming', function(req, res) {
     const animalId = req.params.id;
 
-    //res.sendStatus(200);
-    
-    import('../utilities/helia.mjs').then(({ getIPFSContent}) => {
-      getIPFSContent("bagaaieraevjao3ade4uvjoxbhiil6fgjxfdinnuvgiipj4wpjy54uf2zxata");
+    // call the smart contract to get the cids from the event trace
+    // pass them into the getIPFSContent()
+
+    import('../utilities/helia.mjs').then(async ({ getIPFSContent}) => {
+      const dataString = await getIPFSContent();
+      console.log(`Data from IPFS Node: ${dataString}`)
+      
     })
+
+    res.sendStatus(200);
 });
 
 router.post('/:id/farming', function(req, res) {
     const animalId = req.params.id;
-    let cid;
     data = req.body;
 
-    console.log('Received form data for animal ID', animalId, ':', data);
-    
     // store data on ipfs
     import('../utilities/helia.mjs').then(async ({ addToIPFS }) => {
-      cid = await addToIPFS(data)
+      const cid = await addToIPFS(data)
+
+      // Store this cid on the blockchain
+      // Call the smart contract code
+      // Need the tokenID (animalId) and the dataURI (the cid)
+
+
+
+
      })
-
-    //  import('../utilities/ipfsUtils.mjs').then(async ({ default: storeData }) => {
-    //   await storeData(animalId, data)
-    //  })
-
     res.sendStatus(200);
   });
 
