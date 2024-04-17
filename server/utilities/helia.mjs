@@ -7,6 +7,7 @@ import { noise } from '@chainsafe/libp2p-noise'
 import { yamux } from '@chainsafe/libp2p-yamux'
 import { webSockets } from '@libp2p/websockets'
 import { bootstrap } from '@libp2p/bootstrap'
+import { CID } from 'multiformats/cid'
 
 const blockstore = new MemoryBlockstore()
 const datastore = new MemoryDatastore()
@@ -42,15 +43,12 @@ return await createHelia({
   })
 }
 
+const heliaNode = await createNode()
+const jsonHelia = json(heliaNode)
+
 const addToIPFS = async (data) => {
     try {
-        const heliaNode = await createNode()
-        const jsonHelia = json(heliaNode)
         const cid = await jsonHelia.add(data)
-        console.log('Added file:', cid.toString());
-
-        console.log(await jsonHelia.get(cid));
-
         return cid.toString();
 
     } catch (error) {
@@ -59,12 +57,14 @@ const addToIPFS = async (data) => {
   }
 }
 
-const getIPFSContent = async (cid) => {
-    const heliaNode = await createNode()
-    const jsonHelia = json(heliaNode)
-    const data = await jsonHelia.get(cid)
-    // console.log(`Data at ${cid}: ${data}`);
-    // return data
+const getIPFSContent = async () => {
+    //console.log("you triggered the get function!")
+    const j = json(heliaNode)
+    const cid = CID.parse('bagaaiera2g6zbgowenom4jzsrfffibsevo5shx6ow3phvggvho76k3j7zz2q')
+    //console.log(cid)
+    const obj = await j.get(cid)
+    console.info(`Data at ${cid}: ${JSON.stringify(obj)}`)
+    return JSON.stringify(obj)
 }
 
 export { addToIPFS, getIPFSContent }
