@@ -2,60 +2,70 @@ import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
-function AnimalForm() {
+function AnimalForm( {onSubmit} ) {
 
-  const [animalType, setAnimalType] = useState('')
-  const [animalBreed, setAnimalBreed] = useState('')
-  const [herdNumber, setHerdNumber] = useState('')
+  const initialFormData = {
+    animalId: '',
+    animalType: '',
+    animalBreed: '',
+    herdNumber: '',
+  };
 
-  const submitForm = async (e) => {
-    e.preventDefault()
+  const [formData, setFormData] = useState(initialFormData);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-    const formData = {
-      animalType : animalType,
-      animalBreed : animalBreed,
-      herdNumber : herdNumber
-    }
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsSubmitted(true);
+    onSubmit(event);
+    setFormData(initialFormData);
+  };
 
-    try {
-    // construct the request and fetch the response
-    const response = await fetch('http://localhost:3000/api/nft', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(formData)
-    });
-
-    console.log(response.statusText);
-    
-    // check the response
-    if (!response.status ==200) {
-      console.log('Network response was not ok')  
-    }
-
-  } catch (error) {
-    console.error('There was an error sending the form data');
-  }
-  }
-
-
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   return (
-    <Form onSubmit={submitForm}>
+    <Form onSubmit={handleSubmit}>
+      <Form.Group className="mb-3" controlId="formBasicAnimalId">
+        <Form.Label>Animal ID</Form.Label>
+        <Form.Control
+          name="animalId"
+          value={formData.animalId}
+          onChange={handleInputChange}
+          type="text"
+        />
+      </Form.Group>
+
       <Form.Group className="mb-3" controlId="formBasicAnimalType">
         <Form.Label>Animal Type</Form.Label>
-        <Form.Control onChange={(e) => {setAnimalType(e.target.value)}} type="text" placeholder="Enter Animal Type" />
+        <Form.Control
+          name="animalType"
+          value={formData.animalType}
+          onChange={handleInputChange}
+          type="text"
+        />
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formBasicBreed">
         <Form.Label>Breed</Form.Label>
-        <Form.Control onChange={(e) => {setAnimalBreed(e.target.value)}} type="text" placeholder="Enter Animal Breed" />
+        <Form.Control
+          name="animalBreed"
+          value={formData.animalBreed}
+          onChange={handleInputChange}
+          type="text"
+        />
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="formBasicHerdNumber">
         <Form.Label>Herd Number</Form.Label>
-        <Form.Control onChange={(e) => {setHerdNumber(e.target.value)}} type="text" placeholder="Enter Herd Number" />
+        <Form.Control
+          name="herdNumber"
+          value={formData.herdNumber}
+          onChange={handleInputChange}
+          type="text"
+        />
       </Form.Group>
       <Button variant="primary" type="submit">
         Submit

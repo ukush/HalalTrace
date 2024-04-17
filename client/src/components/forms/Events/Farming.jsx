@@ -18,7 +18,7 @@ function FarmingForm({ onSubmit }) {
     event.preventDefault();
     setIsSubmitted(true);
     onSubmit(event);
-    setFormData(initialFormData); // Clear form data after submission
+    setFormData(initialFormData);
   };
 
   const handleInputChange = (event) => {
@@ -55,7 +55,7 @@ function FarmingForm({ onSubmit }) {
           </div>
           <div>
             <label htmlFor="feedType">Type of Feed:</label>
-            <input type="text" id="feedType" name="feedType" />
+            <input type="text" id="feedType" name="feedType" value={formData.feedType} onChange={handleInputChange}/>
           </div>
           <button type="submit">Submit</button>
         </form>

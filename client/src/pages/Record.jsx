@@ -84,7 +84,7 @@ function Record() {
   
     return (
       <div>
-      <h2>Record important data for your animal/product</h2>
+      <h2>Record important data for your</h2>
       <nav>
         <ul>
           <li className={activeTab === 'Farming' ? 'active' : ''} onClick={() => handleTabClick('Farming')}>Farming</li>
