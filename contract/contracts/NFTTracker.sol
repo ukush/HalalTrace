@@ -52,6 +52,9 @@ contract ProductTracker is ERC721("HalalTrace", "HTrace") {
     function mintToken(uint256 tokenId, string memory _type, string memory _breed, uint256 _herdNum) 
     public returns(uint256) {
 
+        // Check if the provided tokenId is already in use
+        require(id2NFT[tokenId].id == 0, "Token ID already exists");
+
         NFT storage nft = id2NFT[tokenId];
         nft.id = tokenId;
         nft.animalType = _type;

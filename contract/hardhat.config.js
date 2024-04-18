@@ -10,9 +10,8 @@ require("@nomicfoundation/hardhat-ignition-ethers");
 module.exports = {
   solidity: "0.8.20",
   networks: {
-    hardhat: {},
-    mumbai: {
-    url: process.env.MUMBAI_URL,
+    polygonAmoy: {
+    url: process.env.AMOY_API,
       accounts: [`0x${process.env.PRIVATE_KEY}`],
     },
   },
