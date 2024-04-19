@@ -20,13 +20,11 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY
 async function mint(tokenId, type, breed, herdNum) {
     const tx = await contractWallet.mintToken(tokenId, type, breed, herdNum)
     await tx.wait()
-    console.log(tx)
 }
 
 async function update(tokenId, ipfsUrl) {
   const tx = await contractWallet.updateTrace(tokenId, ipfsUrl)
     await tx.wait()
-    console.log(tx)
 }
 
 async function trace(tokenId) {

@@ -137,3 +137,31 @@ button:hover {
 .navbar li.active {
   background-color: #555;
 }
+
+.trace-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.trace-list li {
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px dashed #ccc;
+  border-radius: 5px;
+  margin-left: 20px;
+  margin-bottom: 5px;
+}
+
+strong {
+  font-weight: bold;
+}
+
+.trace-list ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.product-data {
+  list-style-type: none;
+  padding: 0;
+}

@@ -60,10 +60,13 @@ const addToIPFS = async (data) => {
 const getIPFSContent = async (uriString) => {
     const j = json(heliaNode)
     const cid = CID.parse(uriString)
-    //console.log(cid)
     const obj = await j.get(cid)
-    console.info(`Data at ${cid}: ${JSON.stringify(obj)}`)
     return JSON.stringify(obj)
+}
+
+const populateIPFSNode = async (events) => {
+  // take in a array of events from the blockchain
+  // loop through and call the add function
 }
 
 export { addToIPFS, getIPFSContent }

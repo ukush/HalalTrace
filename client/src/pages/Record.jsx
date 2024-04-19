@@ -33,7 +33,7 @@ function Record() {
   
       try {
         const animalId = data.animalId;
-        const response = await fetch(`http://localhost:3000/api/${animalId}/${endpoint}`, {
+        const response = await fetch(`http://localhost:3000/api/nft/events/${animalId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -66,15 +66,15 @@ function Record() {
       } else {
       switch (activeTab) {
         case 'Farming':
-          return <FarmingForm onSubmit={(event) => handleSubmit(event, 'farming')} />;
+          return <FarmingForm onSubmit={(event) => handleSubmit(event)} />;
         case 'Slaughtering':
-          return <SlaughteringForm onSubmit={(event) => handleSubmit(event, 'slaughter')}/>;
+          return <SlaughteringForm onSubmit={(event) => handleSubmit(event)}/>;
         case 'Processing':
-          return <ProcessingForm onSubmit={(event) => handleSubmit(event, 'processing')} />
+          return <ProcessingForm onSubmit={(event) => handleSubmit(event)} />
         case 'Distribution':
-          return <DistributionForm onSubmit={(event) => handleSubmit(event, 'distribution')} />
+          return <DistributionForm onSubmit={(event) => handleSubmit(event)} />
         case 'Retail':
-          return <RetailForm onSubmit={(event) => handleSubmit(event, 'retail')} />
+          return <RetailForm onSubmit={(event) => handleSubmit(event)} />
         default:
           return null;
       }
