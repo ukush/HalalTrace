@@ -1,77 +1,50 @@
 var express = require('express');
 var router = express.Router();
+const { mint, update, trace } = require('../utilities/contractInteraction.js');
 
-/**
- * Get requests - Do I need them?
- * Yes. But only single tokens at a time for now
- * So GET farming/{animalID} will give the up to date event trace thus far
- * Likewise slaughter/{animalID} etc. 
- * 
- * 
- * then.. You need a separate api endpoint with just the /{animalID} to get the full history?
- * 
- * Post requests - These are for submitting the form data
- * Should be: farming/{animalID}
- * 
- * 
- * Inside the post request, we want to:
- * 1. Publish the form data to IPFS
- * 2. Call the smart contract to update the event trace
- * 
- * The metadata is in the form of JSON:
- * 
- * Name:
- * Description:
- * image:
- * attributes:
- * 
- */
-
-router.post('/nft/mint/:id', function(req, res) {
+router.post('/nft/mint/:id', async function(req, res) {
   res.set('Access-Control-Allow-Origin', '*');
   const data = req.body
   console.log(`request object: ${JSON.stringify(data)}`)
 
   // Pass the body to the function that calls the smart contract mint function
-
+  await mint(data.animalId, data.animalType, data.animalBreed, data.herdNumber);
 
   res.sendStatus(200);
 
 })
 
 
-router.get('/:id/farming', function(req, res) {
+router.get('/:id/farming', async function(req, res) {
     const animalId = req.params.id;
 
     // call the smart contract to get the cids from the event trace
-    // pass them into the getIPFSContent()
+    const data = await trace(animalId);
+    const events = data[3]
 
-    import('../utilities/helia.mjs').then(async ({ getIPFSContent}) => {
-      const dataString = await getIPFSContent();
-      console.log(`Data from IPFS Node: ${dataString}`)
-      
-    })
-
-    res.sendStatus(200);
+    let cidArray = [];
+    events.forEach(event => {
+      const cid = event[1]
+      cidArray.push(cid)
+  });
+  
+  import('../utilities/helia.mjs').then(async ({ getIPFSContent}) => {
+      const testCID = cidArray[0]
+      await getIPFSContent(testCID)
+      res.sendStatus(200);
+  });
 });
 
-router.post('/:id/farming', function(req, res) {
+router.post('/:id/farming', async function(req, res) {
     const animalId = req.params.id;
     data = req.body;
 
     // store data on ipfs
-    import('../utilities/helia.mjs').then(async ({ addToIPFS }) => {
-      const cid = await addToIPFS(data)
-
-      // Store this cid on the blockchain
-      // Call the smart contract code
-      // Need the tokenID (animalId) and the dataURI (the cid)
-
-
-
-
-     })
+    import('../utilities/helia.mjs').then(async ({ addToIPFS}) => {
+    const cid = await addToIPFS(data)
+    await update(animalId, cid)
     res.sendStatus(200);
+    })
   });
 
 //   router.get('/slaughter', function(req, res, next) {

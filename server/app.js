@@ -1,6 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
-require('dotenv').config()
+require('dotenv').config({ path: '/home/ukush/HalalTrace/HalalTrace/server/.env' })
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');

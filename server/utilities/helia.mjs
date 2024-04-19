@@ -57,10 +57,9 @@ const addToIPFS = async (data) => {
   }
 }
 
-const getIPFSContent = async () => {
-    //console.log("you triggered the get function!")
+const getIPFSContent = async (uriString) => {
     const j = json(heliaNode)
-    const cid = CID.parse('bagaaiera2g6zbgowenom4jzsrfffibsevo5shx6ow3phvggvho76k3j7zz2q')
+    const cid = CID.parse(uriString)
     //console.log(cid)
     const obj = await j.get(cid)
     console.info(`Data at ${cid}: ${JSON.stringify(obj)}`)
