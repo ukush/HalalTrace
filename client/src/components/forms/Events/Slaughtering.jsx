@@ -31,14 +31,14 @@ function SlaughteringForm({ onSubmit }) {
       </div>
       <div>
         <label htmlFor="slaughterMethod">Slaughter Method:</label>
-        <select id="slaughterMethod" name="slaughterMethod">
+        <select id="slaughterMethod" name="slaughterMethod" required>
           <option value="mechanical">Mechanical</option>
           <option value="hand">Hand</option>
         </select>
       </div>
       <div>
         <label htmlFor="stunningMethod">Stunning Method:</label>
-        <select id="stunningMethod" name="stunningMethod">
+        <select id="stunningMethod" name="stunningMethod" required>
           <option value="gunStunned">Gun-stunned</option>
           <option value="gasStunned">Gas-stunned</option>
           <option value="notStunned">Not stunned</option>
@@ -46,7 +46,7 @@ function SlaughteringForm({ onSubmit }) {
       </div>
       <div>
         <label htmlFor="slaughtermanId">Slaughterman ID:</label>
-        <input type="text" id="slaughtermanId" name="slaughtermanId" />
+        <input type="text" id="slaughtermanId" name="slaughtermanId" required/>
       </div>
       <div>
           <label htmlFor="numberOfParts">Number of Parts to be Cut Into:</label>

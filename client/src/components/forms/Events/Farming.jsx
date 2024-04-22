@@ -39,11 +39,11 @@ function FarmingForm({ onSubmit }) {
           </div>
           <div>
             <label htmlFor="weight">Weight:</label>
-            <input type="number" id="weight" name="weight" />
+            <input type="number" id="weight" name="weight" required/>
           </div>
           <div>
             <label htmlFor="age">Age:</label>
-            <input type="number" id="age" name="age" />
+            <input type="number" id="age" name="age" required/>
           </div>
           <div>
             <label htmlFor="lastHealthCheckDate">Date of Last Health Check:</label>
@@ -55,7 +55,7 @@ function FarmingForm({ onSubmit }) {
           </div>
           <div>
             <label htmlFor="feedType">Type of Feed:</label>
-            <input type="text" id="feedType" name="feedType" value={formData.feedType} onChange={handleInputChange}/>
+            <input type="text" id="feedType" name="feedType" value={formData.feedType} onChange={handleInputChange} required/>
           </div>
           <button type="submit">Submit</button>
         </form>

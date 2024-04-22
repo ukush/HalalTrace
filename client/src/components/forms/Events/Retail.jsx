@@ -18,7 +18,7 @@ function RetailForm({ onSubmit }) {
     event.preventDefault();
     setIsSubmitted(true);
     onSubmit(event);
-    setFormData(initialFormData); // Clear form data after submission
+    setFormData(initialFormData);
   };
 
   return (
@@ -28,6 +28,10 @@ function RetailForm({ onSubmit }) {
         <p>Form has been submitted</p>
       ) : (
         <form onSubmit={(event) => handleSubmit(event, "retail")}>
+        <div>
+        <label htmlFor="ProductId">Product/AnimalId:</label>
+        <input type="text" id="batchNumber" name="Product/AnimalId" required />
+        </div>
         <div>
           <label htmlFor="bestBefore">Best Before:</label>
           <input type="date" id="bestBefore" name="bestBefore" />

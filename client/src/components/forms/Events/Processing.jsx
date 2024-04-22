@@ -18,7 +18,7 @@ function ProcessingForm({ onSubmit }) {
     event.preventDefault();
     setIsSubmitted(true);
     onSubmit(event);
-    setFormData(initialFormData); // Clear form data after submission
+    setFormData(initialFormData);
   };
 
   return (
@@ -28,6 +28,10 @@ function ProcessingForm({ onSubmit }) {
         <p>Form has been submitted</p>
       ) : (
         <form onSubmit={(event) => handleSubmit(event, "processing")}>
+          <div>
+          <label htmlFor="ProductId">Product/AnimalId:</label>
+          <input type="text" id="batchNumber" name="Product/AnimalId" required />
+        </div>
           <div>
           <label htmlFor="batchNumber">Batch Number:</label>
           <input type="text" id="batchNumber" name="batchNumber" />

@@ -2,17 +2,19 @@ import React from 'react';
 import AnimalForm from '../components/forms/AnimalRegistration';
 import '../App.css'
 import { useState } from 'react'
-
+import Loader from '../components/custom/loader/loader';
 
 function Register() {
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [formSubmissionText, setFormSubmissionText] = useState(" ")
+  const [loading, setLoading] = useState(false);
+  const [fetchText, setFetchText] = useState("");
+  const [buttonText, setButtonText] = useState("Register another animal")
 
   const handleSubmit = async (event, animalId) => {
     event.preventDefault();
     setIsSubmitted(true);
+    setLoading(true);
     
-    // Serialize form data
     const formData = new FormData(event.target);
     const data = {};
     formData.forEach((value, key) => {
@@ -28,25 +30,42 @@ function Register() {
         },
         body: JSON.stringify(data),
       });
-  
-      if (response.ok) {
-        setFormSubmissionText("Form has been submitted")
-        console.log('Form data submitted successfully');
-      } else {
-        setFormSubmissionText("Could not submit form")
-        console.error('Failed to submit form data');
-      }
-    } catch (error) {
-      setFormSubmissionText("Could not submit form")
-      console.error('Error:', error);
+    if (response.ok) {
+      setFetchText(`Animal (id:${animalId}) has been registered on the blockchain successfully`);
+    } else {
+      throw new Error(`Failed to register animal (id: ${animalId}) on the blockchain`);
     }
+  } catch (error) {
+    setFetchText(error.message);
+    setButtonText("Try Again");
+  } finally {
+    setLoading(false);
+  }
   }
   
   return (
-    <div>
+  <div>
+     {
+      !isSubmitted && !loading && 
+      <>
       <h2>Register your farm animal on the Blockchain!</h2>
       <AnimalForm onSubmit={handleSubmit}/>
-    </div>
+      </>
+      }
+     {loading && 
+     <>
+        <h2>Connecting to the Blockchain...</h2>
+       <Loader></Loader>
+     </>
+    }
+     {isSubmitted && !loading &&
+     <>
+     <h2>{fetchText}</h2>
+     <br/>
+     <button onClick={() => setIsSubmitted(false)}>{buttonText}</button>
+      </>
+     }
+  </div>
   );
 }
 

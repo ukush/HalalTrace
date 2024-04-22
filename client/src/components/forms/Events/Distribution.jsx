@@ -18,7 +18,7 @@ function DistributionForm({ onSubmit }) {
     event.preventDefault();
     setIsSubmitted(true);
     onSubmit(event);
-    setFormData(initialFormData); // Clear form data after submission
+    setFormData(initialFormData);
   };
 
   return (
@@ -28,6 +28,10 @@ function DistributionForm({ onSubmit }) {
         <p>Form has been submitted</p>
       ) : (
         <form onSubmit={(event) => handleSubmit(event, "distribution")}>
+          <div>
+          <label htmlFor="ProductId">Product/AnimalId:</label>
+          <input type="text" id="productId" name="Product/AnimalId" required />
+        </div>
         <div>
           <label htmlFor="batchNumber">Batch Number:</label>
           <input type="text" id="batchNumber" name="batchNumber" />

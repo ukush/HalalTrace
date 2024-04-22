@@ -12,11 +12,9 @@ function AnimalForm( {onSubmit} ) {
   };
 
   const [formData, setFormData] = useState(initialFormData);
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setIsSubmitted(true);
     onSubmit(event);
     setFormData(initialFormData);
   };
@@ -35,6 +33,7 @@ function AnimalForm( {onSubmit} ) {
           value={formData.animalId}
           onChange={handleInputChange}
           type="text"
+          required="True"
         />
       </Form.Group>
 
@@ -45,6 +44,7 @@ function AnimalForm( {onSubmit} ) {
           value={formData.animalType}
           onChange={handleInputChange}
           type="text"
+          required="True"
         />
       </Form.Group>
 

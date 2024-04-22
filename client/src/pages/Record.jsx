@@ -6,33 +6,36 @@ import ProcessingForm from '../components/forms/Events/Processing';
 import DistributionForm from '../components/forms/Events/Distribution';
 import RetailForm from '../components/forms/Events/Retail';
 import '../App.css'
+import Loader from '../components/custom/loader/loader';
+
 
 function Record() {
     const [activeTab, setActiveTab] = useState('Farming');
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [fetchSuccessful, setfetchSuccessful] = useState(false);
-    const [formSubmissionText, setFormSubmissionText] = useState(" ")
+    const [fetchText, setfetchText] = useState("")
+    const [loading, setLoading] = useState(false);
+    const [buttonText, setButtonText] = useState("Record another event")
   
   
     const handleTabClick = (tab) => {
       setActiveTab(tab);
       setIsSubmitted(false);
+      setfetchText("")
     };
   
-  
-    const handleSubmit = async (event, endpoint) => {
+    const handleSubmit = async (event) => {
       event.preventDefault();
       setIsSubmitted(true);
+      setLoading(true);
       
-      // Serialize form data
       const formData = new FormData(event.target);
       const data = {};
       formData.forEach((value, key) => {
         data[key] = value;
       });
   
+      const animalId = data.animalId;
       try {
-        const animalId = data.animalId;
         const response = await fetch(`http://localhost:3000/api/nft/events/${animalId}`, {
           method: 'POST',
           headers: {
@@ -40,30 +43,22 @@ function Record() {
           },
           body: JSON.stringify(data),
         });
-  
-        if (response.ok) {
-          setfetchSuccessful(true)
-          setFormSubmissionText("Form has been submitted")
-          console.log('Form data submitted successfully');
-        } else {
-          setFormSubmissionText("Could not submit form")
-          console.error('Failed to submit form data');
-        }
-      } catch (error) {
-        setFormSubmissionText("Could not submit form")
-        console.error('Error:', error);
-      }
-    }
-  
-    const renderForm = () => {
-      if (isSubmitted) {
-        return (
-          <div>
-            <p>{formSubmissionText}</p>
-            <button onClick={() => setIsSubmitted(false)}>Make Another Submission</button>
-          </div>
-        );
+        
+      if (response.ok) {
+        setfetchText(`Event has been recorded to Product (id:${animalId}) successfully`);
       } else {
+        throw new Error(`Failed to record event for Product (id: ${animalId})`);
+      }
+    } catch (error) {
+      setfetchText(error.message);
+      setButtonText("Try Again");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const renderForm = () => {
+      {
       switch (activeTab) {
         case 'Farming':
           return <FarmingForm onSubmit={(event) => handleSubmit(event)} />;
@@ -79,25 +74,41 @@ function Record() {
           return null;
       }
     }
-    };
-  
+  }
   
     return (
-      <div>
-      <h2>Record important data for your</h2>
-      <nav>
+      <>
+      {
+        !isSubmitted &&
+        <>
+        <h2>Record important data for your product</h2>
+        <nav>
         <ul>
-          <li className={activeTab === 'Farming' ? 'active' : ''} onClick={() => handleTabClick('Farming')}>Farming</li>
-          <li className={activeTab === 'Slaughtering' ? 'active' : ''} onClick={() => handleTabClick('Slaughtering')}>Slaughtering</li>
-          <li className={activeTab === 'Processing' ? 'active' : ''} onClick={() => handleTabClick('Processing')}>Processing</li>
-          <li className={activeTab === 'Distribution' ? 'active' : ''} onClick={() => handleTabClick('Distribution')}>Distribution</li>
-          <li className={activeTab === 'Retail' ? 'active' : ''} onClick={() => handleTabClick('Retail')}>Retail</li>
+        <li className={activeTab === 'Farming' ? 'active' : ''} onClick={() => handleTabClick('Farming')}>Farming</li>
+        <li className={activeTab === 'Slaughtering' ? 'active' : ''} onClick={() => handleTabClick('Slaughtering')}>Slaughtering</li>
+        <li className={activeTab === 'Processing' ? 'active' : ''} onClick={() => handleTabClick('Processing')}>Processing</li>
+        <li className={activeTab === 'Distribution' ? 'active' : ''} onClick={() => handleTabClick('Distribution')}>Distribution</li>
+        <li className={activeTab === 'Retail' ? 'active' : ''} onClick={() => handleTabClick('Retail')}>Retail</li>
         </ul>
-      </nav>
-      <div className="form-container">
+        </nav>
+        <div className="form-container">
         {renderForm()}
+        </div>
+        </>
+      }
+      {loading && 
+      <>
+        <h2>Connecting to the Blockchain...</h2>
+       <Loader></Loader>
+      </>
+      }
+      {isSubmitted && !loading &&
+      <div>
+      <h2>{fetchText}</h2>
+      <button onClick={() => handleTabClick(activeTab)}>{buttonText}</button>
       </div>
-    </div>
+      }
+    </>
     )
 }
 
