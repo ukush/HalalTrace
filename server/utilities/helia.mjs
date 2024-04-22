@@ -8,6 +8,7 @@ import { yamux } from '@chainsafe/libp2p-yamux'
 import { webSockets } from '@libp2p/websockets'
 import { bootstrap } from '@libp2p/bootstrap'
 import { CID } from 'multiformats/cid'
+import { IPFSError } from './exceptions/exceptions.js';
 
 const blockstore = new MemoryBlockstore()
 const datastore = new MemoryDatastore()
@@ -50,23 +51,32 @@ const addToIPFS = async (data) => {
     try {
         const cid = await jsonHelia.add(data)
         return cid.toString();
-
     } catch (error) {
-    console.error('Error adding file to IPFS:', error);
-    throw error;
+      throw IPFSError('Error adding file to IPFS:', error);
   }
 }
 
-const getIPFSContent = async (uriString) => {
+const getIPFSContent = async (uriString, timeout) => {
+  // when attempting to get content using a cid not pinned by helia, it never resolves
+  // therefore set a timeout of 3 seconds, after which throw an error
+  return new Promise((resolve, reject) => {
+    const timerId = setTimeout(() => {
+      reject(new IPFSError('Request timed out')); // Reject the promise with the IPFSError object
+    }, timeout);
+
     const j = json(heliaNode)
     const cid = CID.parse(uriString)
-    const obj = await j.get(cid)
-    return JSON.stringify(obj)
-}
-
-const populateIPFSNode = async (events) => {
-  // take in a array of events from the blockchain
-  // loop through and call the add function
-}
+    
+    j.get(cid)
+      .then((obj) => {
+        clearTimeout(timerId);
+        resolve(JSON.stringify(obj));
+      })
+      .catch((error) => {
+        clearTimeout(timerId);
+        reject(error);
+      });
+  });
+};
 
 export { addToIPFS, getIPFSContent }
