@@ -4,11 +4,7 @@ function DistributionForm({ onSubmit }) {
 
     const initialFormData = {
         animalId: '',
-        weight: '',
-        age: '',
-        lastHealthCheckDate: '',
-        lastHealthCheckResult: '',
-        feedType: ''
+        batchNumber: ''
       };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -21,22 +17,28 @@ function DistributionForm({ onSubmit }) {
     setFormData(initialFormData);
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+
   return (
     <div>
       <h2>Distribution Form</h2>
       {isSubmitted ? (
         <p>Form has been submitted</p>
       ) : (
-        <form onSubmit={(event) => handleSubmit(event, "distribution")}>
+        <form onSubmit={handleSubmit}>
           <div>
           <label htmlFor="ProductId">Product/AnimalId:</label>
-          <input type="text" id="productId" name="Product/AnimalId" required />
+          <input type="text" id="productId" name="animalId" value={formData.productId} onChange={handleInputChange}required />
         </div>
         <div>
           <label htmlFor="batchNumber">Batch Number:</label>
-          <input type="text" id="batchNumber" name="batchNumber" />
+          <input type="text" id="batchNumber" name="batchNumber" value={formData.batchNumber} onChange={handleInputChange}required />
         </div>
-        <button onClick={() => setIsSubmitted(false)}>Submit</button>
+        <button type='submit'>Submit</button>
       </form>
       )}
     </div>

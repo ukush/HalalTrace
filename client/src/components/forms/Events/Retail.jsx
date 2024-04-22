@@ -4,11 +4,6 @@ function RetailForm({ onSubmit }) {
 
     const initialFormData = {
         animalId: '',
-        weight: '',
-        age: '',
-        lastHealthCheckDate: '',
-        lastHealthCheckResult: '',
-        feedType: ''
       };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -20,6 +15,10 @@ function RetailForm({ onSubmit }) {
     onSubmit(event);
     setFormData(initialFormData);
   };
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   return (
     <div>
@@ -27,16 +26,16 @@ function RetailForm({ onSubmit }) {
       {isSubmitted ? (
         <p>Form has been submitted</p>
       ) : (
-        <form onSubmit={(event) => handleSubmit(event, "retail")}>
+        <form onSubmit={handleSubmit}>
         <div>
         <label htmlFor="ProductId">Product/AnimalId:</label>
-        <input type="text" id="batchNumber" name="Product/AnimalId" required />
+        <input type="text" id="animalId" name="animalId" value={formData.animalId} onChange={handleInputChange} required />
         </div>
         <div>
           <label htmlFor="bestBefore">Best Before:</label>
           <input type="date" id="bestBefore" name="bestBefore" />
         </div>
-        <button onClick={() => setIsSubmitted(false)}>Submit</button>
+        <button typeof='submit'>Submit</button>
       </form>
       )}
     </div>

@@ -35,6 +35,7 @@ function Record() {
       });
   
       const animalId = data.animalId;
+      console.log(animalId)
       try {
         const response = await fetch(`http://localhost:3000/api/nft/events/${animalId}`, {
           method: 'POST',
