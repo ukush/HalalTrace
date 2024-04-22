@@ -45,8 +45,6 @@ router.get('/nft/events/:id', async function(req, res) {
     // call the smart contract to get the cids from the event trace
     try {
       let data = await trace(animalId);
-      console.log(data)
-
       const events = data[3]
       let cidArray = [];
       events.forEach(event => {
@@ -57,7 +55,7 @@ router.get('/nft/events/:id', async function(req, res) {
       let eventArr = [];
       for (cid of cidArray) {
         try {
-          const content = await getIPFSContent(cid, 3000);
+          const content = await getIPFSContent(cid, 5000);
           eventArr.push(content);
         } catch(error) {
           if (error instanceof IPFSError) {
@@ -88,7 +86,7 @@ router.get('/nft/events/:id', async function(req, res) {
       if (error instanceof TraceError) {
         res.status(502).send(error.message)
       } else if (error instanceof IPFSError) {
-        res.status(504).send(error)
+        res.status(504).send(error.message)
       }
     }
   });

@@ -58,10 +58,10 @@ const addToIPFS = async (data) => {
 
 const getIPFSContent = async (uriString, timeout) => {
   // when attempting to get content using a cid not pinned by helia, it never resolves
-  // therefore set a timeout of 3 seconds, after which throw an error
+  // therefore set a timeout of 5 seconds, after which throw an error
   return new Promise((resolve, reject) => {
     const timerId = setTimeout(() => {
-      reject(new IPFSError('Request timed out')); // Reject the promise with the IPFSError object
+      reject(new IPFSError('Error retrieving content from IPFS')); // Reject the promise with the IPFSError object
     }, timeout);
 
     const j = json(heliaNode)
