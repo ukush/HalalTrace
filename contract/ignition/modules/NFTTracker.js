@@ -5,5 +5,5 @@ module.exports = buildModule('NFTTracker', (m) => {
 
     const tokenContract = m.contract("ProductTracker");
 
-    return {tokenContract};
+    return { tokenContract };
 });

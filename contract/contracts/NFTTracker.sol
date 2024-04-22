@@ -75,6 +75,8 @@ contract ProductTracker is ERC721("HalalTrace", "HTrace") {
      * @param dataURI the new uri pointing to IPFS file
      */
     function updateTrace(uint256 tokenId, string memory dataURI) public {
+        // ensure that the animal/product exists
+        require(id2NFT[tokenId].id != 0, "Token ID not accociated with a product/animal");
         // ensure only the owner of the NFT can update it
         require(ownerOf(tokenId) == msg.sender);
 
@@ -97,6 +99,9 @@ contract ProductTracker is ERC721("HalalTrace", "HTrace") {
             Event[] memory
         ) 
     {
+        // ensure that the animal/product exists
+        require(id2NFT[tokenId].id != 0, "Token ID not accociated with a product/animal");
+    
         return (
             id2NFT[tokenId].animalType,
             id2NFT[tokenId].breed,
