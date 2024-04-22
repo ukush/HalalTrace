@@ -14,7 +14,7 @@ router.post('/nft/mint/:id', async function(req, res) {
   }catch (error) {
     if (error instanceof MintTokenError) {
       res.status(502).send(error.message);
-    } else res.status(500).send(error.message)
+    } else res.status(500).send(error)
   }
 })
 
@@ -86,10 +86,8 @@ router.get('/nft/events/:id', async function(req, res) {
 
     } catch(error) {
       if (error instanceof TraceError) {
-        console.log("TRACE ERROR")
         res.status(502).send(error.message)
       } else if (error instanceof IPFSError) {
-      console.log("IPFS ERROR")
         res.status(504).send(error)
       }
     }

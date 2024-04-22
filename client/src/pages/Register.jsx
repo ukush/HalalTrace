@@ -33,7 +33,8 @@ function Register() {
     if (response.ok) {
       setFetchText(`Animal (id:${animalId}) has been registered on the blockchain successfully`);
     } else {
-      throw new Error(`Failed to register animal (id: ${animalId}) on the blockchain`);
+      const errorMessage = await response.text()
+      throw new Error(errorMessage);
     }
   } catch (error) {
     setFetchText(error.message);

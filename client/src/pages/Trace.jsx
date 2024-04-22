@@ -28,8 +28,10 @@ function Trace() {
     if (response.ok) {
       const responseData = await response.json();
       setProductData(responseData);
+      setfetchText("");
     } else {
-      throw new Error(`Failed to trace Product (id: ${animalId})`);
+      const errorMessage = await response.text()
+      throw new Error(errorMessage);
     }
   } catch (error) {
     setProductData(null)

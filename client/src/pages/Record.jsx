@@ -47,7 +47,8 @@ function Record() {
       if (response.ok) {
         setfetchText(`Event has been recorded to Product (id:${animalId}) successfully`);
       } else {
-        throw new Error(`Failed to record event for Product (id: ${animalId})`);
+        const errorMessage = await response.text()
+        throw new Error(errorMessage);
       }
     } catch (error) {
       setfetchText(error.message);
