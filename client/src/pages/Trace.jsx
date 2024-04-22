@@ -11,7 +11,7 @@ function Trace() {
   const [fetchText, setfetchText] = useState("")
 
 
-  const handleSubmit = async (event, endpoint) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitted(true)
     setLoading(true);
@@ -21,19 +21,18 @@ function Trace() {
     formData.forEach((value, key) => {
       data[key] = value;
     });
-
+    
     const animalId = data.animalId;
     try {
       const response = await fetch(`http://localhost:3000/api/nft/events/${animalId}`)
-
     if (response.ok) {
-      response.json().then(data => {
-        setProductData(data)
-      })
+      const responseData = await response.json();
+      setProductData(responseData);
     } else {
       throw new Error(`Failed to trace Product (id: ${animalId})`);
     }
   } catch (error) {
+    setProductData(null)
     setfetchText(error.message);
     setButtonText("Try Again");
   } finally {
@@ -62,7 +61,6 @@ function Trace() {
     return formattedDate + ' ' + formattedTime;
 }
 
-
   return (
     <>
     {
@@ -76,6 +74,16 @@ function Trace() {
         </div>
         <button>Get Trace</button>
       </form>
+    </div>
+    }
+    {loading && 
+     <>
+        <h2>Connecting to the Blockchain...</h2>
+       <Loader></Loader>
+     </>
+    }
+     {isSubmitted && !loading &&
+     <>
       {productData && (
         <div>
           <h3>Product Data</h3>
@@ -104,16 +112,6 @@ function Trace() {
           </div>
         </div>
       )}
-    </div>
-    }
-    {loading && 
-     <>
-        <h2>Connecting to the Blockchain...</h2>
-       <Loader></Loader>
-     </>
-    }
-     {isSubmitted && !loading &&
-     <>
      <h2>{fetchText}</h2>
      <br/>
      <button onClick={() => setIsSubmitted(false)}>{buttonText}</button>
