@@ -72,8 +72,9 @@ describe("Token contract", function () {
       // get the details using the getAnimalDetails function
       const nftDetails = await nft.getAnimalDetails(tokenID);
 
-      expect(nftDetails.trace.length).to.equals(1);
-      expect(nftDetails.trace[0].dataURI).to.equal(dataURI);
+
+      expect(nftDetails[3].length).to.equals(1);
+      expect(nftDetails[3][0].dataURI).to.equal(dataURI);
 
     });
   })
