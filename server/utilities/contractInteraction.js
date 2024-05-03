@@ -1,7 +1,7 @@
 const { ethers } = require("ethers");
 const contract = require("/home/ukush/HalalTrace/HalalTrace/contract/ignition/deployments/chain-80002/artifacts/NFTTracker#ProductTracker.json");
 const API_KEY = process.env.AMOY_API
-const ADDRESS = process.env.AMOY_CONTRACT_ADDRESS
+const ADDRESS = process.env.DEPLOYED_ADD
 const PRIVATE_KEY = process.env.PRIVATE_KEY
 const { TraceError, MintTokenError } = require('./exceptions/exceptions.js')
 

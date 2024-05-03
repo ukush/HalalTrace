@@ -49,7 +49,7 @@ contract ProductTracker is ERC721("HalalTrace", "HTrace") {
      * @param _breed the breed of the animal
      * @param _herdNum the herd number of the animal
      */
-    function mintToken(uint256 tokenId, string memory _type, string memory _breed, uint256 _herdNum) 
+    function mintToken(uint256 tokenId, string calldata _type, string calldata _breed, uint256 _herdNum) 
     public returns(uint256) {
 
         // Check if the provided tokenId is already in use
@@ -74,7 +74,7 @@ contract ProductTracker is ERC721("HalalTrace", "HTrace") {
      * @param tokenId the unique id of the animal
      * @param dataURI the new uri pointing to IPFS file
      */
-    function updateTrace(uint256 tokenId, string memory dataURI) public {
+    function updateTrace(uint256 tokenId, string calldata dataURI) public {
         // ensure that the animal/product exists
         require(id2NFT[tokenId].id != 0, "Token ID not accociated with a product/animal");
         // ensure only the owner of the NFT can update it
