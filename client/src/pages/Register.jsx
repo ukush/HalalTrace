@@ -23,7 +23,7 @@ function Register() {
   
     try {
       const animalId = data.animalId;
-      const response = await fetch(`http://localhost:3000/api/nft/mint/${animalId}`, {
+      const response = await fetch(`http://localhost:3000/api/nft/animal/mint/${animalId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

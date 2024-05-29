@@ -8,7 +8,6 @@ var cors = require('cors');
 
 // import routes
 var indexRouter = require('./routes/index');
-// var userRouter = require('./routes/users')
 var apiRouter = require('./routes/api');
 
 var app = express();
@@ -27,7 +26,6 @@ app.use(cors());
 
 // use routes
 app.use('/', indexRouter)
-// app.use('/users', userRouter)
 app.use('/api', apiRouter)
 
 

@@ -1,9 +1,9 @@
 const { buildModule } = require('@nomicfoundation/hardhat-ignition/modules');
 
 
-module.exports = buildModule('NFTTracker', (m) => {
+module.exports = buildModule('Animal', (m) => {
 
-    const tokenContract = m.contract("ProductTracker");
+    const tokenContract = m.contract("AnimalTracker");
 
     return { tokenContract };
 });
