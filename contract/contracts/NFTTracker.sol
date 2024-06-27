@@ -8,7 +8,6 @@ contract ProductTracker is ERC721("HalalTrace", "HTrace") {
 
     address public owner;
     
-
     event Mint(address minter, uint256 tokenId);
     event Updated(address minter, string newURI);
 

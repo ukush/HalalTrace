@@ -57,7 +57,7 @@ function FarmingForm({ onSubmit }) {
             <label htmlFor="feedType">Type of Feed:</label>
             <input type="text" id="feedType" name="feedType" value={formData.feedType} onChange={handleInputChange} required/>
           </div>
-          <button type="submit">Submit</button>
+          <button className='farming-submit' type="submit">Submit</button>
         </form>
       )}
     </div>
