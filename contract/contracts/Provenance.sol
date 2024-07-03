@@ -2,15 +2,12 @@
 // Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity >=0.5.0 <0.9.0;
 
-
 /**
  * This contract allows users to determine the provenance (origin) of products.
  * Producers are added and their details stored permenantly on the blockchain
  * Certified producers can add products the the blockchain. Only key data points are needed.
  * The product is simply represented through it's id, which can be gathered via it's physical
  * barcode
- * 
- * 
  */
 contract Provenance {
 
@@ -19,7 +16,7 @@ contract Provenance {
 
     /**
      * @dev A struct which can link the CID of an IPFS file containing additional 
-     * event data to each product & actor that perform. 
+     * event data to each product & actor that performs that action. 
      */
     struct ScEvent {
         string dataURI;
@@ -42,6 +39,7 @@ contract Provenance {
      */
     // do we need this on chain? or could we do with off-chain storage for this?
     struct Producer {
+        address companyWallet;
         string name;
         string country;
         string zip;
@@ -53,7 +51,7 @@ contract Provenance {
     // maps product id to product details
     mapping(uint256 => Product) products;
     // maps public address to the producer details
-    mapping(uint256 => Producer) producers;
+    mapping(address => Producer) producers;
 
     constructor() {
         owner = msg.sender;
@@ -66,7 +64,7 @@ contract Provenance {
      * @param zip the zip/postcode of the producer's operation location
      */
     function addProducer(string memory name, string memory country, string memory zip) public {
-
+        // check that the company is not aready registered
     }
 
     /**
