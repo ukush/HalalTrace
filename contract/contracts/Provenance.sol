@@ -46,12 +46,22 @@ contract Provenance {
         // e.g. certificate of carbon emissions
     }
 
+    // maps batch number to array of product ids
     mapping(uint256 => uint256[]) batches;
-
     // maps product id to product details
     mapping(uint256 => Product) products;
     // maps public address to the producer details
     mapping(address => Producer) producers;
+    // maps batches/products to their owners
+    // do we need to track each individual product's owner or just the batch?
+    mapping(uint256 => address) owners;
+
+    // Events
+    event ProducerAdded(address producer, uint256 timestamp);
+    event ProducerCertified(address producer, uint256 timestamp);
+    event ProductAdded(uint256 productId, uint256 timestamp);
+    event ScEventAdded(address actor, uint256 id, uint256 timestamp, bytes32 dataURI);
+    event batchAdded(uint256 batchNumber, uint256 timestamp);
 
     constructor() {
         owner = msg.sender;
@@ -69,6 +79,8 @@ contract Provenance {
         require(producers[msg.sender].name.length == 0 , "Company wallet already registered");
         // add producer
         producers[msg.sender] = Producer(_name, _country, _zip, false);
+        // emit event
+        emit ProducerAdded(msg.sender, block.timestamp);
     }
 
     /**
@@ -83,6 +95,8 @@ contract Provenance {
         if (producers[_producer].certified == false) {
             // certify
             producers[_producer].certified = true;
+            // emit event
+            emit ProducerCertified(msg.sender, block.timestamp);
         }
     }
 
@@ -102,22 +116,30 @@ contract Provenance {
         product.name = _name;
         product.producer = msg.sender;
         product.created = block.timestamp;
+
+        // emit event
+        emit ProductAdded(_productId, product.created);
     
         // return the timestamp of creation
         return product.created;
     }
 
-    function addBatchProducts(uint256 _batchNo, uint256[] memory _productIds) public {
+    function addBatchProducts(uint256 _batchNo, uint256[] memory _productIds, bytes32 _name) public {
         // ensure the batch doesn't already exist on-chain
         require(batches[_batchNo].length == 0, "A batch of products already exists with that batch id");
+        
         for (uint i = 0; i < _productIds.length; i++) {
-            //addProduct(_productIds[i]);
+            addProduct(_productIds[i], _name);
         }
-    }
 
+        // emit event
+        emit batchAdded(_batchNo, block.timestamp);
+
+    }
 
     /**
      * Function to link supply chain activity data to a product
+     * This can be applied to both batches of products and individual products
      * @param _productId the product identifier (gathered from the physical barcode)
      * @param _eventURI the CID (content hash) of the IPFS file containing event data
      */
@@ -127,8 +149,12 @@ contract Provenance {
         // check that the product doesn't already exist
         require(products[_productId].name.length == 0 , "That product already exists");
 
+        // update mapping
         Product storage product = products[_productId];
         product.ScEvents.push(ScEvent(_eventURI, block.timestamp));
+
+        // emit event
+        emit ScEventAdded(msg.sender, _productId, product.ScEvents[product.ScEvents.length - 1].timestamp, _eventURI);
     }
 
     /**
@@ -140,7 +166,7 @@ contract Provenance {
      * @return _scEvent array of the events associated with the product
      */
     function findProduct(uint256 _productId) public view returns(bytes32, address, uint, ScEvent[] memory) {
-        require(products[_productId].name.length != 0 , "That product already exists");
+        require(products[_productId].name.length != 0 , "Product not found");
 
         return (
             products[_productId].name,
@@ -149,4 +175,14 @@ contract Provenance {
             products[_productId].ScEvents
         );
     }
-}
+    /**
+     * Function to return all the product ids in a batch given the batch number
+     * @param _batchNo the unique identifier for the batch of products
+     * @return An array of product ids
+     */
+    function findBatch(uint256 _batchNo) public view returns(uint256[] memory) {
+        require(batches[_batchNo].length != 0, "Product Batch not found");
+
+        return batches[_batchNo];
+    }
+}   
