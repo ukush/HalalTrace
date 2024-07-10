@@ -54,7 +54,7 @@ contract Provenance {
     mapping(address => Producer) producers;
     // maps batches/products to their owners
     // do we need to track each individual product's owner or just the batch?
-    mapping(uint256 => address) owners;
+    mapping(uint256 => address[]) owners;
 
     // Events
     event ProducerAdded(address producer, uint256 timestamp);
@@ -96,7 +96,7 @@ contract Provenance {
         require(producers[_producer].name.length != 0, "Producer not found");
         // Delete by setting all values to zero
         delete(producers[_producer]);
-        
+
         emit producerRemoved(owner, _producer, block.timestamp);
     }
 
@@ -134,6 +134,9 @@ contract Provenance {
         product.producer = msg.sender;
         product.created = block.timestamp;
 
+        // update the owners (currently the same as the producer)
+        owners[_productId].push(msg.sender);
+
         // emit event
         emit ProductAdded(_productId, product.created);
     
@@ -161,6 +164,7 @@ contract Provenance {
         require(products[_productId].name.length != 0, "Product not found");
         // delete by setting all values to zero
         delete(products[_productId]);
+        delete(owners[_productId]);
 
         emit productRemoved(owner, _productId, block.timestamp);
     }
@@ -212,5 +216,24 @@ contract Provenance {
         require(batches[_batchNo].length != 0, "Product Batch not found");
 
         return batches[_batchNo];
+    }
+
+    /**
+     * Function to find the current owner of a product/batch
+     * @param _productId the id of the product/batch
+     * @return address the address of the current owner
+     */
+    function findCurrentOwner(uint256 _productId) public view returns(address) {
+        require(owners[_productId][owners[_productId].length - 1] != address(0), "Product not found");
+        return owners[_productId][owners[_productId].length - 1];
+    }
+
+     /**
+     * Function to find the current owner of a product/batch
+     * @param _productId the id of the product/batch
+     * @return address[] an array of all the owners of the product/batch
+     */
+    function getOwnershipHistory(uint256 _productId) public view returns(address[] memory) {
+        return owners[_productId];
     }
 }   
