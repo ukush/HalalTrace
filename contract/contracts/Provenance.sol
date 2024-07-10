@@ -10,6 +10,12 @@ pragma solidity >=0.5.0 <0.9.0;
  * barcode
  */
 
+/**
+ * Make this more gas efficient...
+ * 1) Mimise the data stored on chain
+ * 2) Minimise read/write operations to mappings
+ */
+
 contract Provenance { 
 
     address public owner;
@@ -77,10 +83,17 @@ contract Provenance {
      * 
      */
     function addProducer(bytes32 _name, bytes32 _country, bytes32 _zip) public {
+        // Load pointer from     storage once - subsequent operations are cheaper
+        Producer storage producer = producers[msg.sender];
         // check that the company is not aready registered
-        require(producers[msg.sender].name.length == 0 , "Company wallet already registered");
+        require(producer.name.length == 0 , "Company already registered");
+
         // add producer
-        producers[msg.sender] = Producer(_name, _country, _zip, false);
+        producer.name = _name;
+        producer.country = _country;
+        producer.zip = _zip;
+        producer.certified = false;
+ 
         // emit event
         emit ProducerAdded(msg.sender, block.timestamp);
     }
@@ -135,8 +148,7 @@ contract Provenance {
         product.created = block.timestamp;
 
         // update the owners (currently the same as the producer)
-        owners[_productId].push(msg.sender);
-
+        changeOwner(_productId, msg.sender);
         // emit event
         emit ProductAdded(_productId, product.created);
     
@@ -157,6 +169,10 @@ contract Provenance {
 
     }
 
+    /**
+     * Function to remove a product 
+     * @param _productId the id of the product to remove
+     */
     function removeProduct(uint256 _productId) public {
         // only the contract owner can remove products
         require(msg.sender == owner, "Only the contract owner can remove products");
@@ -179,10 +195,10 @@ contract Provenance {
         // check that the producer is certifed
         require(producers[msg.sender].certified == true, "Only certified producers can add new products");
         // check that the product doesn't already exist
-        require(products[_productId].name.length == 0 , "That product already exists");
+        Product storage product = products[_productId];
+        require(product.name.length == 0 , "That product already exists");
 
         // update mapping
-        Product storage product = products[_productId];
         product.ScEvents.push(ScEvent(_eventURI, block.timestamp));
 
         // emit event
@@ -198,13 +214,14 @@ contract Provenance {
      * @return _scEvent array of the events associated with the product
      */
     function findProduct(uint256 _productId) public view returns(bytes32, address, uint, ScEvent[] memory) {
-        require(products[_productId].name.length != 0 , "Product not found");
+        Product storage product = products[_productId];
+        require(product.name.length != 0 , "Product not found");
 
         return (
-            products[_productId].name,
-            products[_productId].producer,
-            products[_productId].created,
-            products[_productId].ScEvents
+            product.name,
+            product.producer,
+            product.created,
+            product.ScEvents
         );
     }
     /**
@@ -213,9 +230,9 @@ contract Provenance {
      * @return An array of product ids
      */
     function findBatch(uint256 _batchNo) public view returns(uint256[] memory) {
-        require(batches[_batchNo].length != 0, "Product Batch not found");
-
-        return batches[_batchNo];
+        uint256[] memory batch = batches[_batchNo];
+        require(batch.length != 0, "Product Batch not found");
+        return batch;
     }
 
     /**
@@ -224,8 +241,9 @@ contract Provenance {
      * @return address the address of the current owner
      */
     function findCurrentOwner(uint256 _productId) public view returns(address) {
-        require(owners[_productId][owners[_productId].length - 1] != address(0), "Product not found");
-        return owners[_productId][owners[_productId].length - 1];
+        address currentOwner = owners[_productId][owners[_productId].length - 1];
+        require(currentOwner != address(0), "Product not found");
+        return currentOwner;
     }
 
      /**
@@ -235,5 +253,10 @@ contract Provenance {
      */
     function getOwnershipHistory(uint256 _productId) public view returns(address[] memory) {
         return owners[_productId];
+    }
+
+    function changeOwner(uint256 _productId, address newOwner) public {
+        require(products[_productId].name.length != 0, "Product not found");
+        owners[_productId].push(newOwner);
     }
 }   
