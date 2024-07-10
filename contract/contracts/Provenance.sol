@@ -62,6 +62,8 @@ contract Provenance {
     event ProductAdded(uint256 productId, uint256 timestamp);
     event ScEventAdded(address actor, uint256 id, uint256 timestamp, bytes32 dataURI);
     event batchAdded(uint256 batchNumber, uint256 timestamp);
+    event producerRemoved(address contractAdmin, address producerId, uint256 timestamp);
+    event productRemoved(address contractAdmin, uint256 productId, uint256 timestamp);
 
     constructor() {
         owner = msg.sender;
@@ -81,6 +83,21 @@ contract Provenance {
         producers[msg.sender] = Producer(_name, _country, _zip, false);
         // emit event
         emit ProducerAdded(msg.sender, block.timestamp);
+    }
+
+    /**
+     * Function to remove a producer
+     * @param _producer the public address of the producer to be removed
+     */
+    function removeProducer(address _producer) public {
+        // Only the contract owner is allowed to call this?
+        require(msg.sender == owner, "Only the contract owner can remove producers");
+        // Ensure that the producer is registered
+        require(producers[_producer].name.length != 0, "Producer not found");
+        // Delete by setting all values to zero
+        delete(producers[_producer]);
+        
+        emit producerRemoved(owner, _producer, block.timestamp);
     }
 
     /**
@@ -135,6 +152,17 @@ contract Provenance {
         // emit event
         emit batchAdded(_batchNo, block.timestamp);
 
+    }
+
+    function removeProduct(uint256 _productId) public {
+        // only the contract owner can remove products
+        require(msg.sender == owner, "Only the contract owner can remove products");
+        // ensure the product exists
+        require(products[_productId].name.length != 0, "Product not found");
+        // delete by setting all values to zero
+        delete(products[_productId]);
+
+        emit productRemoved(owner, _productId, block.timestamp);
     }
 
     /**
