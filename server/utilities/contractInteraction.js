@@ -19,8 +19,8 @@ const trackerContract = new ethers.Contract(ADDRESS, contract.abi, signer);
 
 const gasPrice = signer.getGasPrice();
 
-  // connect wallet to contract
-  const contractWallet = trackerContract.connect(signer)
+// connect wallet to contract
+const contractWallet = trackerContract.connect(signer)
 
 
 async function mint(tokenId, type, breed, herdNum) {

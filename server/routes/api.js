@@ -14,7 +14,9 @@ router.post('/nft/mint/:id', async function(req, res) {
   }catch (error) {
     if (error instanceof MintTokenError) {
       res.status(502).send(error.message);
-    } else res.status(500).send(error)
+    } else {
+      res.status(500).send(error)
+    }
   }
 })
 
