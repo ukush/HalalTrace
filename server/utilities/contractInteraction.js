@@ -1,5 +1,6 @@
+require("dotenv").config()
 const { ethers } = require("ethers");
-const contract = require("/home/ukush/HalalTrace/HalalTrace/contract/ignition/deployments/chain-80002/artifacts/NFTTracker#ProductTracker.json");
+const contract = require("../../contract/ignition/deployments/chain-80002/artifacts/NFTTracker#ProductTracker.json");
 const API_KEY = process.env.AMOY_API
 const ADDRESS = process.env.DEPLOYED_ADD
 const PRIVATE_KEY = process.env.PRIVATE_KEY
@@ -30,7 +31,6 @@ async function mint(tokenId, type, breed, herdNum) {
       const tx = await contractWallet.mintToken(tokenId, type, breed, herdNum, {gasLimit : gasLimit, gasPrice: gasPrice})
       await tx.wait()
     } catch (error) {
-      console.log(error)
       // throws an error if the tokenId has already been used to to mint a token previously
       throw new MintTokenError(error.error.reason, error);
     }
