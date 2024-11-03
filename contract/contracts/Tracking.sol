@@ -57,15 +57,24 @@ contract Tracking {
     event LateShipment(uint256 expectedTimeOfArrival, uint256 timeOfArrival, uint256 batchNo, address sender);
 
     /**
+     * 
+     * TODO
+     * --
+     * What should be agreed upon for products to be sent to another sc actor?
+     * What should be the course of action if this criteria is met/not met?
+     * 
+     * 
+     * PUSH SC --> FLOW IS ALREADY KNOWN AT ORIGIN --? PRE-AGREED CONTRACT --> ORIGIN --> MANUFACTURER A --> SUPPLIER B --> DISTRTIBUTOR C --> RETAILER D
+     * PULL SC --> THE END RECIPIENT TRIGGERS THE FLOW --> INVENTORY MANAGEMENT, AUTOMATED PURCHASES, DATA ANALYTICS.
+     * 
+     * 
+     * 
      * SetContractParameters
      * AgreeToContractParams
      * RejectContractParams 
      * Send Shipment --> BatchNumber, quantity of items in the batch, lead time, agreed pay
      * Receive Shipment / Confirm Shipment
      * Change ownership
-     * 
-     * Need to make this a token contract? --> SO that you can send the tokens
-     * Tokenomics --> How much supply? Who initially holds them? etc.
      * 
      */
 

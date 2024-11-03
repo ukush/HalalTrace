@@ -78,7 +78,7 @@ describe("Provenance contract", function () {
   });
 
   describe("Add a new ScActor", function () {
-    it("Should emit an event with the correct args", async function () {
+    it("Should emit an event with the correct args if successfully added to mapping", async function () {
         const { provV2, owner, account1 } = await loadFixture(deployContractAndSetVariables);
 
         const actorAddress = owner.address;

@@ -32,7 +32,7 @@ contract ProvenanceV2 {
     struct Product {
         // the timestamp of when this was created/registered
         uint256 created;
-        // the contract address of the owner of the product
+        // the wallet address of the owner of the product
         address owner;
         // a trace of events that occur for each product
         ScEvent[] ScEvents;
@@ -147,6 +147,22 @@ contract ProvenanceV2 {
             product.owner,
             product.ScEvents
         );
+    }
+
+
+    function checkProductOwner(address _actor, uint256 _productId) public view returns(bool) {
+        
+        bool exists = false;
+
+        // retrieve the products owned by this actor
+        uint256[] storage products = ownedProducts[_actor];
+
+        for (uint256 i = 0; i < products.length; i++) {
+            if (products[i] == _productId) {
+                exists = true;
+            }
+        }
+        return exists;
     }
 
 
